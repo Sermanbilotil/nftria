@@ -1,0 +1,87 @@
+{
+  "name": "nftria",
+  "version": "0.1.0",
+  "homepage": ".",
+  "private": true,
+  "dependencies": {
+    "@glidejs/glide": "^3.5.2",
+    "@headlessui/react": "^1.4.3",
+    "@heroicons/react": "^1.0.5",
+    "@reduxjs/toolkit": "^1.8.0",
+    "@tailwindcss/aspect-ratio": "^0.4.0",
+    "@tailwindcss/forms": "^0.4.0",
+    "@tailwindcss/line-clamp": "^0.3.1",
+    "@tailwindcss/typography": "^0.5.1",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/glidejs__glide": "^3.4.1",
+    "@types/jest": "^27.4.0",
+    "@types/node": "^16.11.21",
+    "@types/react": "17.0.38",
+    "@types/react-dom": "17.0.11",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/redux-logger": "^3.0.9",
+    "@walletconnect/web3-provider": "^1.7.8",
+    "moralis": "^1.8.0",
+    "next-tick": "^1.1.0",
+    "node-sass": "^7.0.1",
+    "process": "^0.11.10",
+    "rc-slider": "^9.7.5",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-helmet": "^6.1.0",
+    "react-moralis": "^1.4.0",
+    "react-redux": "^7.2.6",
+    "react-router-dom": "5.2.0",
+    "react-scripts": "^5.0.1",
+    "react-tuby": "^0.1.17",
+    "react-use": "^17.3.2",
+    "redux-logger": "^3.0.6",
+    "redux-persist": "^6.0.0",
+    "stream-browserify": "^3.0.0",
+    "typescript": "^4.5.5",
+    "util": "^0.12.4",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "resolutions": {
+    "@types/react": "17.0.38",
+    "@types/react-dom": "17.0.11"
+  },
+  "devDependencies": {
+    "assert": "^2.0.0",
+    "autoprefixer": "^10.4.2",
+    "crypto-browserify": "^3.12.0",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "postcss": "^8.4.5",
+    "react-app-rewired": "^2.2.1",
+    "stream-http": "^3.2.0",
+    "tailwindcss": "^3.0.15",
+    "url": "^0.11.0"
+  }
+}
