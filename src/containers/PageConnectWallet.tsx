@@ -11,6 +11,7 @@ import walletlinkImg from "images/walletlink.webp";
 import fortmaticImg from "images/fortmatic.webp";
 import {useMoralis, useMoralisQuery} from "react-moralis";
 import {useAppDispatch, useAppSelector} from "../app/hooks";
+import { useHistory } from "react-router-dom";
 
 import {
     userDataFetched,
@@ -18,8 +19,6 @@ import {
     selectCurrentUserData, logutUser,
 
 } from "app/userData/getUserDataReducer";
-import {addNewIdListAudio} from "../app/mediaRunning/mediaRunning";
-
 
 
 
@@ -50,6 +49,8 @@ const plans = [
     },
 ];
 const PageConnectWallet: FC<PageConnectWalletProps> = ({className = ""}) => {
+    const hiatory = useHistory()
+
     const [showModal, setShowModal] = useState(false);
     const dispatch = useAppDispatch();
     const currentUserData = useAppSelector(selectCurrentUserData);
@@ -67,8 +68,8 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({className = ""}) => {
                 if( currentUserData.userName == undefined ) {
                     setUserData({userName: 'Unnamed'})
                 }
-
                 dispatch(userDataFetched({ ethAddress: ethAddress }))
+                hiatory.push("/");
             }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthenticated]);
@@ -96,7 +97,7 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({className = ""}) => {
                             "pillar",
                         ] })
                         .then(function (user) {
-                            console.log('user', user);
+                            console.log('user walletconnect', user);
 
                         })
                         .catch(function (error) {

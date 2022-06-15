@@ -13,8 +13,7 @@ const SiteHeader = () => {
   const currentUserData = useAppSelector(selectCurrentUserData);
   const isLogged = currentUserData.login
 
-
- console.log('header', isLogged)
+ console.log('User login', isLogged)
 
   return isLogged ? <HeaderLogged   /> : <Header2 /> ;
 };

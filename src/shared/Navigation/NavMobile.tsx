@@ -14,13 +14,21 @@ import ButtonSecondary from "shared/Button/ButtonSecondary";
 export interface NavMobileProps {
   data?: NavItemType[];
   onClickClose?: () => void;
+  login?: boolean;
 }
 
 const NavMobile: React.FC<NavMobileProps> = ({
   data = NAVIGATION_DEMO_2,
   onClickClose,
+  login,
 }) => {
+
+
+
+
   const _renderMenuChild = (item: NavItemType) => {
+
+
     return (
       <ul className="nav-mobile-sub-menu pl-6 pb-1 text-base">
         {item.children?.map((i, index) => (
@@ -140,9 +148,9 @@ const NavMobile: React.FC<NavMobileProps> = ({
         <ButtonPrimary href={"/page-upload-item"} className="!px-10">
           Create
         </ButtonPrimary>
-        <ButtonSecondary href={"/connect-wallet"} className="flex-1">
+        {!login && <ButtonSecondary href={"/connect-wallet"} className="flex-1">
           Connect Wallet
-        </ButtonSecondary>
+        </ButtonSecondary>}
       </div>
     </div>
   );
