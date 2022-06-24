@@ -128,6 +128,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
       },
       onError: (error) => {
         alert(error.message);
+        setIsLoading(false)
       },
     });
 
