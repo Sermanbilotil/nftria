@@ -65,7 +65,7 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = ({logOut}) => {
               <NotifyDropdown />
             </div>
             <div></div>
-            <ButtonPrimary sizeClass="px-4 py-2 sm:px-5">Create</ButtonPrimary>
+            <ButtonPrimary href={"/page-upload-item"} sizeClass="px-4 py-2 sm:px-5">Create</ButtonPrimary>
             <div></div>
             <AvatarDropdown />
           </div>

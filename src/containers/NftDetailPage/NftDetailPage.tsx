@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, {FC, useEffect, useState} from "react";
 import Avatar from "shared/Avatar/Avatar";
 import Badge from "shared/Badge/Badge";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
@@ -16,16 +16,72 @@ import ItemTypeVideoIcon from "components/ItemTypeVideoIcon";
 import LikeButton from "components/LikeButton";
 import AccordionInfo from "./AccordionInfo";
 import SectionBecomeAnAuthor from "components/SectionBecomeAnAuthor/SectionBecomeAnAuthor";
+const axios = require('axios');
+
 
 export interface NftDetailPageProps {
   className?: string;
   isPreviewMode?: boolean;
+
+}
+export interface NFTProps {
+  collection: string;
+  description: string;
+  instantSale: string;
+  link: string;
+  name: string;
+  onSale: string;
+  price: string;
+  propertie: string;
+  royalties: string;
+  sizeMb: string;
+  unlock: string;
 }
 
-const NftDetailPage: FC<NftDetailPageProps> = ({
+
+const NftDetailPage: FC<NftDetailPageProps> = (props,{
   className = "",
   isPreviewMode,
 }) => {
+  const [nftData, setNftData] = useState({} as NFTProps)
+  const [image, setImage] = useState('')
+  const [tokenId, setTokenId] = useState('')
+  const [address, setAddress] = useState('')
+
+  useEffect(() => {
+    fetchNFTContent()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
+
+
+  const fetchNFTContent = async () => {
+    //@ts-ignore
+    if(props.history  && props.history.location.state.externalUrl) {
+
+      //@ts-ignore
+      console.log('image', props.history.location.state.uri)
+      //@ts-ignore
+      setImage(props.history.location.state.uri)
+      //@ts-ignore
+      setTokenId(props.history.location.state.id)
+      //@ts-ignore
+      setAddress(props.history.location.state.address)
+      //@ts-ignore
+      const url =  props.history.location.state.externalUrl
+      const res = await axios.get(url);
+      console.log('res', res.data)
+
+      setNftData(res.data)
+    }
+
+  };
+
+
+
+
+
   const renderSection1 = () => {
     return (
       <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
@@ -36,7 +92,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
             <LikeSaveBtns />
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
-            BearX #3636
+            {nftData.name}
           </h2>
 
           {/* ---------- 4 ----------  */}
@@ -47,6 +103,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 <span className="text-sm">Creator</span>
                 <span className="text-neutral-900 dark:text-neutral-200 font-medium flex items-center">
                   <span>{personNames[1]}</span>
+                  <VerifyIcon iconClass="w-4 h-4" />
                   <VerifyIcon iconClass="w-4 h-4" />
                 </span>
               </span>
@@ -83,7 +140,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 Current Bid
               </span>
               <span className="text-3xl xl:text-4xl font-semibold text-green-500">
-                1.000 ETH
+                {nftData.price} ETH
               </span>
               <span className="text-lg text-neutral-400 sm:ml-5">
                 ( ≈ $3,221.22)
@@ -188,7 +245,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
             {/* HEADING */}
             <div className="relative">
               <NcImage
-                src={nftsLargeImgs[0]}
+                src={image}
                 containerClassName="aspect-w-11 aspect-h-12 rounded-3xl overflow-hidden"
               />
               {/* META TYPE */}
@@ -198,7 +255,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               <LikeButton className="absolute right-3 top-3 " />
             </div>
 
-            <AccordionInfo />
+            <AccordionInfo description={nftData.description} id={tokenId} address={address} />
           </div>
 
           {/* SIDEBAR */}

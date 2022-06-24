@@ -6,8 +6,8 @@ import Input from "shared/Input/Input";
 import Textarea from "shared/Textarea/Textarea";
 import { Helmet } from "react-helmet";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
-import {selectCurrentUserData, userDataFetched} from "../../app/userData/getUserDataReducer";
-import {useMoralis, useMoralisFile} from "react-moralis";
+import {changeLoginState, selectCurrentUserData, userDataFetched} from "../../app/userData/getUserDataReducer";
+import {useMoralis, useMoralisFile, useMoralisWeb3Api} from "react-moralis";
 
 export interface AccountPageProps {
   profilePhoto?: File,
@@ -24,7 +24,9 @@ export interface AccountPageProps {
 }
 
 const AccountPage: FC<AccountPageProps> = ({ className = "" }) => {
-  const { setUserData} = useMoralis();
+  const Web3Api = useMoralisWeb3Api();
+
+  const {setUserData, isInitialized, isAuthenticated, account } = useMoralis();
   const { saveFile } = useMoralisFile()
   const dispatch = useAppDispatch();
 
@@ -40,7 +42,6 @@ const AccountPage: FC<AccountPageProps> = ({ className = "" }) => {
   const [facebook, setFacebook] = useState(currentUserData.facebook)
   const [twitter, setTwitter] = useState(currentUserData.twitter)
   const [telegram, setTelegram] = useState(currentUserData.telegram)
-
 
 
 
@@ -117,6 +118,11 @@ const AccountPage: FC<AccountPageProps> = ({ className = "" }) => {
         break;
     }
   }
+
+
+
+
+
 
 
   return (

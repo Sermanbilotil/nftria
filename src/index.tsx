@@ -17,8 +17,8 @@ import {MoralisProvider} from "react-moralis";
 
 ReactDOM.render(
 
-        <MoralisProvider serverUrl="https://qvsihmdtwjeh.usemoralis.com:2053/server"
-                         appId="Yva4k0vkNg4ZZgMIrAN9sawBqXliEAwqlPMqiksz">
+        <MoralisProvider serverUrl="https://gxo6ck5wjopq.usemoralis.com:2053/server"
+                         appId="h0KVrD5XXXT7pqwmZL7USCuNrdqiq2icJpwobjSq">
             <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
                 <App/>

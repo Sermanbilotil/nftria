@@ -15,6 +15,7 @@ export interface  userDataState {
     ethAddress?: string,
     login?: boolean,
     error?: boolean,
+    nfts?: ({ metadataObj: any; token_id: string; token_address: string; owner_of: string; } | undefined)[] | undefined
     // state?: "loading" | "playing" | "paused" | "ended" | null;
 }
 

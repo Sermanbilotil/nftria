@@ -9,7 +9,7 @@ import metamaskImg from "images/metamask.webp";
 import walletconnectImg from "images/walletconnect.webp";
 import walletlinkImg from "images/walletlink.webp";
 import fortmaticImg from "images/fortmatic.webp";
-import {useMoralis, useMoralisQuery} from "react-moralis";
+import {useMoralis, useMoralisQuery, useMoralisWeb3Api} from "react-moralis";
 import {useAppDispatch, useAppSelector} from "../app/hooks";
 import { useHistory } from "react-router-dom";
 
@@ -51,19 +51,26 @@ const plans = [
 const PageConnectWallet: FC<PageConnectWalletProps> = ({className = ""}) => {
     const hiatory = useHistory()
 
+    const Web3Api = useMoralisWeb3Api();
+    const { authenticate,setUserData,Moralis, isAuthenticated,refetchUserData, isAuthenticating, user, account, logout } = useMoralis();
+
+
     const [showModal, setShowModal] = useState(false);
     const dispatch = useAppDispatch();
     const currentUserData = useAppSelector(selectCurrentUserData);
 
 
-    const { authenticate,setUserData, isAuthenticated,refetchUserData, isAuthenticating, user, account, logout } = useMoralis();
-
 
     useEffect(() => {
         dispatch(changeLoginState(isAuthenticated));
+
             if(isAuthenticated && user) {
+                fetchAllNfts()
+
                 const ethAddress = user.get("ethAddress")
                 console.log('email',currentUserData.email,currentUserData.userName, user)
+
+
 
                 if( currentUserData.userName == undefined ) {
                     setUserData({userName: 'Unnamed'})
@@ -73,6 +80,34 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({className = ""}) => {
             }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthenticated]);
+
+
+    const fetchAllNfts = async () => {
+
+        const options = {
+            chain: "mumbai",
+            address: account,
+            token_address: "0x0b874cF7b842Ce12Cc8aF81a200dC0Db0d1b5f3F",
+        };
+
+        const polygonNFTs = await Web3Api.account.getNFTsForContract(options as any);
+        const tokenUri = polygonNFTs?.result?.map((data) => {
+            const { metadata, owner_of } = data;
+
+            if (metadata) {
+                const metadataObj = JSON.parse(metadata);
+                return metadataObj;
+            } else {
+                return undefined;
+            }
+
+        });
+        dispatch(userDataFetched({ nfts: tokenUri }))
+        console.log('user tokens', tokenUri)
+
+    };
+
+
 
     const login = async (i: number) => {
         console.log('i', i)

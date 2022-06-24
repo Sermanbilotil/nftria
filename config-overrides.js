@@ -19,6 +19,8 @@ module.exports = function (config, env) {
                 os: require.resolve("os-browserify"),
                 url: require.resolve("url"),
                 stream: require.resolve('stream-browserify'),
+                crypto: require.resolve("crypto-browserify")
+
             },
         },
         ignoreWarnings: [/Failed to parse source map/],

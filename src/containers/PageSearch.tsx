@@ -84,7 +84,12 @@ const PageSearch: FC<PageSearchProps> = ({ className = "" }) => {
           {/* LOOP ITEMS */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 lg:mt-10">
             {Array.from("11111111").map((_, index) => (
-              <CardNFT key={index} />
+              <CardNFT key={index} uri={''}
+                       isLiked={false}
+                       inStock={''}
+                       likesNumber={''}
+                       name={''}
+                       price={''} />
             ))}
           </div>
 

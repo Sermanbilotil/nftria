@@ -10,11 +10,32 @@ import { ClockIcon } from "@heroicons/react/outline";
 import ItemTypeVideoIcon from "./ItemTypeVideoIcon";
 
 export interface CardNFTProps {
-  className?: string;
+  key?: number,
   isLiked?: boolean;
+  className?: string;
+  uri?: string;
+   inStock?: string;
+  likesNumber: string;
+  name: string;
+  price: string;
+    externalUrl?: string;
+    id?: string,
+    address?: string,
+
 }
 
-const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
+const CardNFT: FC<CardNFTProps> = ({key,
+                                     className = "",
+                                     isLiked,
+                                     uri,
+                                     inStock,
+                                      likesNumber,
+                                      name,
+                                      price,
+                                       externalUrl,
+    id,
+    address
+                                   }) => {
   const renderAvatars = () => {
     return (
       <div className="flex -space-x-1 ">
@@ -47,7 +68,7 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
         <div>
           <NcImage
             containerClassName="flex aspect-w-11 aspect-h-12 w-full h-0 rounded-3xl overflow-hidden will-change-transform"
-            src={nftsImgs[Math.floor(Math.random() * nftsImgs.length)]}
+            src={uri || nftsImgs[Math.floor(Math.random() * nftsImgs.length)]}
             className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-300 ease-in-out rounded-3xl will-change-transform"
           />
         </div>
@@ -67,17 +88,17 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
         <div className="flex justify-between">
           {renderAvatars()}
           <span className="text-neutral-700 dark:text-neutral-400 text-xs">
-            {Math.floor(Math.random() * 90) + 10} in stock
+            {inStock} in stock
           </span>
         </div>
         <h2 className={`text-lg font-medium`}>
-          CloneF #{Math.floor(Math.random() * 1000) + 1000}
+            {name}
         </h2>
 
         <div className="w-2d4 w-full border-b border-neutral-100 dark:border-neutral-700"></div>
 
         <div className="flex justify-between items-end ">
-          <Prices labelTextClassName="bg-white dark:bg-neutral-900 dark:group-hover:bg-neutral-800 group-hover:bg-neutral-50" />
+          <Prices  price={price + ' ETH'} labelTextClassName="bg-white dark:bg-neutral-900 dark:group-hover:bg-neutral-800 group-hover:bg-neutral-50" />
           <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
             <ClockIcon className="w-4 h-4" />
             <span className="ml-1 mt-0.5">
@@ -87,7 +108,12 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
         </div>
       </div>
 
-      <Link to={"/nft-detailt"} className="absolute inset-0"></Link>
+      <Link to={{pathname: `/nft-detailt/${externalUrl?.replace('https://ipfs.moralis.io:2053/ipfs/', '')}`, state: {
+              externalUrl: externalUrl,
+              uri: uri,
+              address: address,
+              id: id,
+          },}}  className="absolute inset-0"/>
     </div>
   );
 };

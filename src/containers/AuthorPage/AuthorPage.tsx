@@ -38,6 +38,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
 
 
   const currentUserData = useAppSelector(selectCurrentUserData);
+
   const shortEth = currentUserData.ethAddress !== undefined && currentUserData.ethAddress.substr(1, 15) + '...' + currentUserData.ethAddress.substr(currentUserData.ethAddress.length - 4)
 
 
@@ -161,7 +162,12 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
                 {/* LOOP ITEMS */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 lg:mt-10">
                   {Array.from("11111111").map((_, index) => (
-                    <CardNFT key={index} />
+                    <CardNFT key={index} uri={''}
+                             isLiked={false}
+                             inStock={''}
+                             likesNumber={''}
+                             name={''}
+                             price={''}/>
                   ))}
                 </div>
 
@@ -174,9 +180,27 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
               <Tab.Panel className="">
                 {/* LOOP ITEMS */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 lg:mt-10">
-                  {Array.from("11111111").map((_, index) => (
-                    <CardNFT key={index} />
-                  ))}
+                  {currentUserData.nfts !== undefined && currentUserData.nfts.map((item, index) => {
+                      if(item !== undefined) {
+                        const nft = item.metadataObj
+                        console.log('nft', nft)
+
+                        return nft !== undefined &&  <CardNFT
+                            key={index}
+                            isLiked
+                            uri={nft.image}
+                            inStock={nft.inStock}
+                            likesNumber={nft.likesNumber}
+                            name={nft.name}
+                            price={nft.price}
+                            externalUrl={nft.externalUrl}
+                            id={item.token_id}
+                            address={item.token_address}
+
+                        />
+                      }
+
+                  })}
                 </div>
 
                 {/* PAGINATION */}
@@ -189,7 +213,15 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
                 {/* LOOP ITEMS */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 lg:mt-10">
                   {Array.from("11111111").map((_, index) => (
-                    <CardNFT isLiked key={index} />
+                    <CardNFT isLiked key={index}
+
+                             uri={''}
+                             inStock={''}
+                             likesNumber={''}
+                             name={''}
+                             price={''}
+
+                    />
                   ))}
                 </div>
 

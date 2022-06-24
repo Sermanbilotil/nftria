@@ -14,7 +14,12 @@ const SectionGridFeatureNFT: FC<SectionGridFeatureNFTProps> = () => {
         className={`grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 `}
       >
         {Array.from("11111111").map((_, index) => (
-          <CardNFT key={index} />
+          <CardNFT key={index}  uri={''}
+                   isLiked={false}
+                   inStock={''}
+                   likesNumber={''}
+                   name={''}
+                   price={''}/>
         ))}
       </div>
       <div className="flex mt-16 justify-center items-center">

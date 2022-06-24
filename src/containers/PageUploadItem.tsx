@@ -1,5 +1,5 @@
 import Label from "components/Label/Label";
-import React, { FC, useState } from "react";
+import React, {FC, useEffect, useState} from "react";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import Input from "shared/Input/Input";
 import Textarea from "shared/Textarea/Textarea";
@@ -10,6 +10,20 @@ import { nftsImgs } from "contains/fakeData";
 import MySwitch from "components/MySwitch";
 import ButtonSecondary from "shared/Button/ButtonSecondary";
 import NcImage from "shared/NcImage/NcImage";
+
+import Web3 from "web3";
+import {AbiItem} from 'web3-utils';
+
+import {useMoralisWeb3Api,useWeb3ExecuteFunction, useMoralisFile ,useNewMoralisObject,useMoralis} from "react-moralis";
+
+
+import {TokenContractAbi} from '../abi';
+import {marketplaceContractAbi} from '../abi';
+import {userDataFetched} from "../app/userData/getUserDataReducer";
+import {useAppDispatch} from "../app/hooks";
+
+
+const web3 = new Web3(Web3.givenProvider);
 
 export interface PageUploadItemProps {
   className?: string;
@@ -43,7 +57,157 @@ const plans = [
 ];
 
 const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
+
+  const dispatch = useAppDispatch();
+  //Moralis
+  const { user, Moralis,account, isAuthenticated ,enableWeb3, isWeb3Enabled} = useMoralis();
+  const { saveFile,} = useMoralisFile();
+  const contractProcessor = useWeb3ExecuteFunction();
+
+  //Create items
+  const [isLoading, setIsLoading] = useState(false)
+  const [file, setFile] = useState(null)
+  const [photoSrc, setPhotoSrc] = useState('')
+  const [itemName, setItemName] = useState('')
+  const [userLink, setUserLink] = useState('')
+  const [itemDescription, setItemDescription] = useState('')
+  const [itemCollection, setItemCOllection] = useState('')
   const [selected, setSelected] = useState(plans[1]);
+  //Details
+  const [royalties, setRoyalties] = useState('')
+  const [sizeMb, setSizeMb] = useState('')
+  const [propertie, setPropertie] = useState('')
+  //Swither
+  const [onSale, setOnSale] = useState(false)
+  const [instantSale, setInstantSale] = useState(false)
+  const [unlock, setUnlock] = useState(false)
+
+
+
+
+  const takeFile = (e: any) => {
+
+    setFile(e.target.files[0])
+    setPhotoSrc(URL.createObjectURL(e.target.files[0]))
+
+  }
+
+  useEffect(  () => {
+    if (!isWeb3Enabled) {
+      enableWeb3();
+    }
+  }, [])
+
+  const mintNFT = async (account: any, uri: string) => {
+    console.log('mint start',)
+    let options ={
+      contractAddress: "0x0b874cF7b842Ce12Cc8aF81a200dC0Db0d1b5f3F",
+      functionName: "safeMint",
+      abi: [
+        {
+          "inputs": [{"internalType": "address", "name": "to", "type": "address"}, {
+            "internalType": "string",
+            "name": "uri",
+            "type": "string"
+          }], "name": "safeMint", "outputs": [], "stateMutability": "payable", "type": "function"
+        },
+      ],
+      params: {
+        to: account,
+        uri: uri,
+      },
+      msgValue: Moralis.Units.ETH(0.1),
+    }
+
+    await contractProcessor.fetch({
+      params: options,
+      onSuccess: (result) => {
+        console.log("Succesful Mint", result);
+        setIsLoading(false)
+        alert("Your NFT has been successfully Minted")
+      },
+      onError: (error) => {
+        alert(error.message);
+      },
+    });
+
+  }
+
+
+  const uploadFile = async (event: any) => {
+    event.preventDefault();
+    setIsLoading(true)
+      const metadata = {
+        name: itemName,
+        description: itemDescription,
+        link: userLink,
+        collection: '1',
+        royalties: royalties,
+        sizeMb: sizeMb,
+        price: '100',
+        propertie: propertie,
+        onSale: onSale.toString(),
+        instantSale: instantSale.toString(),
+        unlock: unlock.toString(),
+      }
+
+    try {
+      const result = await saveFile(
+          "nft.json",
+          { base64: btoa(JSON.stringify(metadata)) },
+          {
+            type: "base64",
+            saveIPFS: true,
+          }
+      );
+      // @ts-ignore
+      const nftResult = await uploadNftMetada(result.ipfs());
+      // @ts-ignore
+      console.log('result.ipfs()',result.ipfs())
+      console.log('nftResult',nftResult)
+      // @ts-ignore
+      await mintNFT(account, nftResult.ipfs());
+
+    } catch (error: any) {
+      alert(error.message);
+    }
+
+  }
+
+  const uploadNftMetada = async (url: string) => {
+
+      if(file == null ) {
+        alert('Please select a file')
+        return
+      } else if (itemName.length == 0 ) {
+        alert('Please give the item a name')
+        return
+      }
+    console.log('uploadNftMetada',url)
+    const image = new Moralis.File(itemName, file);
+    await image.saveIPFS();
+    // @ts-ignore
+    const imagePath = image.ipfs()
+
+    const metadataNft = {
+      image: imagePath,
+      name: itemName,
+      price: '100',
+      inStock: '25',
+      likesNumber: '22',
+      externalUrl: url,
+    };
+    const resultNft = await saveFile(
+        "metadata.json",
+        { base64: btoa(JSON.stringify(metadataNft)) },
+        {
+          type: "base64",
+          saveIPFS: true,
+        }
+    );
+    return resultNft;
+  };
+
 
   return (
     <div
@@ -98,7 +262,9 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                         className="relative cursor-pointer  rounded-md font-medium text-primary-6000 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
                       >
                         <span>Upload a file</span>
+
                         <input
+                          onChange={takeFile}
                           id="file-upload"
                           name="file-upload"
                           type="file"
@@ -113,11 +279,22 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                   </div>
                 </div>
               </div>
+              {photoSrc &&   <div className="mt-5 ">
+                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-6000 border-dashed rounded-xl">
+                  <div className="space-y-1 text-center">
+                        <img
+                            className={`inset-0 w-full h-full object-cover `}
+                            src={photoSrc}
+                            alt={'uploaded item'}
+                        />
+                  </div>
+                </div>
+              </div>}
             </div>
 
             {/* ---- */}
             <FormItem label="Item Name">
-              <Input defaultValue="NFT name" />
+              <Input defaultValue="NFT name"  onChange={(e) => setItemName(e.target.value)} />
             </FormItem>
 
             {/* ---- */}
@@ -129,7 +306,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                 <span className="inline-flex items-center px-3 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
                   https://
                 </span>
-                <Input className="!rounded-l-none" placeholder="abc.com" />
+                <Input onChange={(e) => setUserLink(e.target.value)} className="!rounded-l-none" placeholder="abc.com" />
               </div>
             </FormItem>
 
@@ -145,7 +322,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                 </div>
               }
             >
-              <Textarea rows={6} className="mt-1.5" placeholder="..." />
+              <Textarea onChange={(e) => setItemDescription(e.target.value)} rows={6} className="mt-1.5" placeholder="..." />
             </FormItem>
 
             <div className="w-full border-b-2 border-neutral-100 dark:border-neutral-700"></div>
@@ -222,38 +399,43 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-2.5">
               {/* ---- */}
               <FormItem label="Royalties">
-                <Input placeholder="20%" />
+                <Input onChange={(e) => setRoyalties(e.target.value)} type="number" placeholder="20%" />
               </FormItem>
               {/* ---- */}
               <FormItem label="Size">
-                <Input placeholder="165Mb" />
+                <Input onChange={(e) => setSizeMb(e.target.value)} placeholder="165Mb" />
               </FormItem>
               {/* ---- */}
               <FormItem label="Propertie">
-                <Input placeholder="Propertie" />
+                <Input onChange={(e) => setPropertie(e.target.value)} placeholder="Propertie" />
               </FormItem>
             </div>
 
             {/* ---- */}
-            <MySwitch enabled />
+            <MySwitch enabled={onSale} setEnabled={setOnSale} />
 
             {/* ---- */}
             <MySwitch
+                enabled={instantSale}
+                setEnabled={setInstantSale}
               label="Instant sale price"
               desc="Enter the price for which the item will be instantly sold"
             />
 
             {/* ---- */}
             <MySwitch
-              enabled
+              enabled={unlock}
+              setEnabled={setUnlock}
               label="Unlock once purchased"
               desc="Content will be unlocked after successful transaction"
             />
 
             {/* ---- */}
             <div className="pt-2 flex flex-col sm:flex-row space-y-3 sm:space-y-0 space-x-0 sm:space-x-3 ">
-              <ButtonPrimary className="flex-1">Upload item</ButtonPrimary>
+              <ButtonPrimary onClick={(e: void) => uploadFile(e)} className="flex-1" loading={isLoading} >Upload item</ButtonPrimary>
+
               <ButtonSecondary className="flex-1">Preview item</ButtonSecondary>
+
             </div>
           </div>
         </div>
