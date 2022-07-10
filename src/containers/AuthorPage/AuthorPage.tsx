@@ -183,8 +183,6 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
                   {currentUserData.nfts !== undefined && currentUserData.nfts.map((item, index) => {
                       if(item !== undefined) {
                         const nft = item.metadataObj
-                        console.log('nft', nft)
-
                         return nft !== undefined &&  <CardNFT
                             key={index}
                             isLiked

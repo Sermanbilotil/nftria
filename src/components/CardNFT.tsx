@@ -15,9 +15,9 @@ export interface CardNFTProps {
   className?: string;
   uri?: string;
    inStock?: string;
-  likesNumber: string;
-  name: string;
-  price: string;
+  likesNumber?: string;
+  name?: string;
+  price?: string;
     externalUrl?: string;
     id?: string,
     address?: string,
@@ -26,13 +26,13 @@ export interface CardNFTProps {
 
 const CardNFT: FC<CardNFTProps> = ({key,
                                      className = "",
-                                     isLiked,
-                                     uri,
-                                     inStock,
-                                      likesNumber,
-                                      name,
-                                      price,
-                                       externalUrl,
+                                     isLiked = true,
+                                     uri= '',
+                                     inStock= '20',
+                                      likesNumber= 10,
+                                      name= 'NFT',
+                                      price= '100',
+                                       externalUrl = '',
     id,
     address
                                    }) => {

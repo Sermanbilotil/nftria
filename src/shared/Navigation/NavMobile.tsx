@@ -148,7 +148,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
         <ButtonPrimary href={"/page-upload-item"} className="!px-10">
           Create
         </ButtonPrimary>
-        {!login && <ButtonSecondary href={"/connect-wallet"} className="flex-1">
+        {!login && <ButtonSecondary href={"/connect-wallet"} onClick={onClickClose} className="flex-1">
           Connect Wallet
         </ButtonSecondary>}
       </div>

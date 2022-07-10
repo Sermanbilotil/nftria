@@ -6,7 +6,7 @@ import Avatar from "shared/Avatar/Avatar";
 import {MainNav2LoggedProps} from "./MainNav2Logged";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import {selectCurrentMediaRunning} from "../../app/mediaRunning/mediaRunning";
-import {changeLoginState, selectCurrentUserData,logutUser} from "../../app/userData/getUserDataReducer";
+import {changeLoginState, selectCurrentUserData,logoutUser} from "../../app/userData/getUserDataReducer";
 import {useMoralis} from "react-moralis";
 import ProfileIcon from "../../images/ribbon.png"
 
@@ -28,7 +28,7 @@ const AvatarDropdown: FC<AvatarDropdownProps> = (props: AvatarDropdownProps) => 
     const logOut = async () => {
         console.log("logged out");
         await logout();
-        dispatch(logutUser({login: false} ))
+        dispatch(logoutUser({login: false} ))
     }
 
   return (

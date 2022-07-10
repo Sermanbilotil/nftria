@@ -5,7 +5,7 @@ import Input from "shared/Input/Input";
 import Textarea from "shared/Textarea/Textarea";
 import { Helmet } from "react-helmet";
 import FormItem from "components/FormItem";
-import { RadioGroup } from "@headlessui/react";
+import {Listbox, RadioGroup} from "@headlessui/react";
 import { nftsImgs } from "contains/fakeData";
 import MySwitch from "components/MySwitch";
 import ButtonSecondary from "shared/Button/ButtonSecondary";
@@ -14,13 +14,17 @@ import NcImage from "shared/NcImage/NcImage";
 import Web3 from "web3";
 import {AbiItem} from 'web3-utils';
 
-import {useMoralisWeb3Api,useWeb3ExecuteFunction, useMoralisFile ,useNewMoralisObject,useMoralis} from "react-moralis";
+import {useMoralisWeb3Api,useWeb3ExecuteFunction,useMoralisQuery, useMoralisFile ,useNewMoralisObject,useMoralis} from "react-moralis";
 
 
 import {TokenContractAbi} from '../abi';
 import {marketplaceContractAbi} from '../abi';
-import {userDataFetched} from "../app/userData/getUserDataReducer";
-import {useAppDispatch} from "../app/hooks";
+import {selectCurrentUserData, userDataFetched} from "../app/userData/getUserDataReducer";
+import {useAppDispatch, useAppSelector} from "../app/hooks";
+import ButtonDropdown from "../components/ButtonDropdown";
+import ArchiveFilterListBox from "../components/ArchiveFilterListBox";
+import CategoryListBox from "../components/CategoryListBox";
+import Moralis from "moralis/types";
 
 
 const web3 = new Web3(Web3.givenProvider);
@@ -31,48 +35,29 @@ export interface PageUploadItemProps {
 
 const plans = [
   {
-    name: "Crypto Legend - Professor",
-    featuredImage: nftsImgs[0],
+    name: "My First Collection",
+    image: nftsImgs[0],
   },
-  {
-    name: "Crypto Legend - Professor",
-    featuredImage: nftsImgs[1],
-  },
-  {
-    name: "Crypto Legend - Professor",
-    featuredImage: nftsImgs[2],
-  },
-  {
-    name: "Crypto Legend - Professor",
-    featuredImage: nftsImgs[3],
-  },
-  {
-    name: "Crypto Legend - Professor",
-    featuredImage: nftsImgs[4],
-  },
-  {
-    name: "Crypto Legend - Professor",
-    featuredImage: nftsImgs[5],
-  },
+
 ];
 
-const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
+const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
 
   const dispatch = useAppDispatch();
-  //Moralis
-  const { user, Moralis,account, isAuthenticated ,enableWeb3, isWeb3Enabled} = useMoralis();
-  const { saveFile,} = useMoralisFile();
-  const contractProcessor = useWeb3ExecuteFunction();
-
+  //user
+  const currentUserData = useAppSelector(selectCurrentUserData);
   //Create items
   const [isLoading, setIsLoading] = useState(false)
   const [file, setFile] = useState(null)
+  const [userCollections, setUserCollections] = useState(plans)
+  const [newCollection, setNewCollection] = useState('')
   const [photoSrc, setPhotoSrc] = useState('')
   const [itemName, setItemName] = useState('')
   const [userLink, setUserLink] = useState('')
   const [itemDescription, setItemDescription] = useState('')
   const [itemCollection, setItemCOllection] = useState('')
-  const [selected, setSelected] = useState(plans[1]);
+  const [selected, setSelected] = useState(userCollections[0]);
+  const [category, setCategory] = useState('');
   //Details
   const [royalties, setRoyalties] = useState('')
   const [sizeMb, setSizeMb] = useState('')
@@ -81,24 +66,53 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const [onSale, setOnSale] = useState(false)
   const [instantSale, setInstantSale] = useState(false)
   const [unlock, setUnlock] = useState(false)
+  //Moralis
+  const {user, setUserData, Moralis, account, isAuthenticated, enableWeb3, isWeb3Enabled} = useMoralis();
+  const {saveFile,} = useMoralisFile();
+  const contractProcessor = useWeb3ExecuteFunction();
+  const {save} = useNewMoralisObject("collections");
+  const Web3Api = useMoralisWeb3Api();
 
-
+  const allCollections = useMoralisQuery("collections", (query: any) =>
+          query.equalTo("ethAddress", currentUserData.ethAddress),
+      [],
+      {autoFetch: false});
 
 
   const takeFile = (e: any) => {
-
     setFile(e.target.files[0])
     setPhotoSrc(URL.createObjectURL(e.target.files[0]))
 
   }
 
-  useEffect(  () => {
+  useEffect(() => {
     if (!isWeb3Enabled) {
       enableWeb3();
     }
+
+    allCollections.fetch({
+      onSuccess: (result) => {
+        console.log('result all', result, result.length)
+
+        if(result.length === 0) {
+          setUserCollections(plans)
+          return
+        }
+
+        const getCol: ((prevState: { name: string; image: string; }[]) => { name: string; image: string; }[]) | Moralis.Attributes[] = []
+
+        result.map(col => {
+          // @ts-ignore
+          return  getCol.push(col.attributes)
+        })
+        // @ts-ignore
+        setUserCollections(getCol)
+      }
+    })
   }, [])
 
-  const mintNFT = async (account: any, uri: string) => {
+
+  const mintNFT = async (account: any, uri: string, img: string) => {
     console.log('mint start',)
     let options ={
       contractAddress: "0x0b874cF7b842Ce12Cc8aF81a200dC0Db0d1b5f3F",
@@ -125,6 +139,77 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
         console.log("Succesful Mint", result);
         setIsLoading(false)
         alert("Your NFT has been successfully Minted")
+        // @ts-ignore
+        const hash = result.hash
+        // // @ts-ignore
+        // setUserData({userCollections: {[selected.name]:  collectionData }})
+        // @ts-ignore
+        let userName
+        let userId
+        let address
+        // @ts-ignore
+        console.log('user', user.get("userName"))
+        console.log('selectes', selected)
+        if(user) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+              userName = user.get("userName"),
+              userId =  user.get("objectId"),
+              address = user.get("ethAddress")
+        }
+        // @ts-ignore
+        const token = {
+          name: itemName,
+          userId: userId,
+          userName: userName,
+          ethAddress: address,
+          category: category,
+          isLiked:  false,
+          description: itemDescription,
+          link: userLink,
+          collection: selected,
+          royalties: royalties,
+          sizeMb: sizeMb,
+          price: '100',
+          propertie: propertie,
+          onSale: onSale.toString(),
+          instantSale: instantSale.toString(),
+          unlock: unlock.toString(),
+          hash: hash,
+          externalUrl: uri,
+          image: img,
+          inStork: "20",
+          likesNumber: '10',
+
+        }
+
+        const collectionData = {
+          name: selected.name,
+          userId: userId,
+          userName: userName,
+          ethAddress: address,
+          image: selected.image,
+          description: '',
+          items: [token]
+        }
+
+        const checkCollection =  allCollections.fetch({
+          onSuccess: (result) => {
+            console.log('result',result, result.length)
+            const  filteredCol = result.filter(item => {
+              return item.attributes.name === selected.name
+            })
+            if(result.length === 0 || filteredCol.length == 0) {
+              saveCollection(collectionData)
+            } else {
+              console.log('exist')
+              const items = filteredCol[0].attributes.items
+              items.push(token)
+
+              upDateCollectione(items)
+            }
+          }
+        });
+        console.log('checkCollection',checkCollection)
       },
       onError: (error) => {
         alert(error.message);
@@ -133,6 +218,48 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     });
 
   }
+  const addNewCollection = () => {
+        const newCol =  [{
+          name: newCollection,
+          image: nftsImgs[1],
+        }]
+    // @ts-ignore
+    setSelected(newCol)
+    setUserCollections(userCollections.concat(newCol))
+    console.log(userCollections)
+
+  }
+
+  const saveCollection = async (collectionData: any) => {
+    console.log('save data', collectionData)
+    save(collectionData, {
+      onSuccess: (data: any) => {
+        // Execute any logic that should take place after the object is saved.
+        console.log(data)
+        alert("New object created with objectId: " + data);
+
+      },
+      onError: (error: any) => {
+        // Execute any logic that should take place if the save fails.
+        // error is a Moralis.Error with an error code and message.
+        alert("Failed to create new object, with error code: " + error.message);
+      },
+    });
+  };
+
+  const upDateCollectione = async(newItems: []) => {
+    const checkCollections = Moralis.Object.extend('collections');
+    const query = new Moralis.Query(checkCollections);
+    query.equalTo("name", selected.name);
+    const collection = await query.first();
+
+    // @ts-ignore
+    collection.set('items', newItems)
+    // @ts-ignore
+    await collection.save();
+
+    console.log('col',collection);
+  }
 
 
   const uploadFile = async (event: any) => {
@@ -140,9 +267,11 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     setIsLoading(true)
       const metadata = {
         name: itemName,
+        category: category,
+        isLiked:  false,
         description: itemDescription,
         link: userLink,
-        collection: '1',
+        collection: selected,
         royalties: royalties,
         sizeMb: sizeMb,
         price: '100',
@@ -167,7 +296,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
       console.log('result.ipfs()',result.ipfs())
       console.log('nftResult',nftResult)
       // @ts-ignore
-      await mintNFT(account, nftResult.ipfs());
+      await mintNFT(account, nftResult[0].ipfs(),nftResult[1] );
 
     } catch (error: any) {
       alert(error.message);
@@ -193,6 +322,8 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     const metadataNft = {
       image: imagePath,
       name: itemName,
+      category: category,
+      collection: selected,
       price: '100',
       inStock: '25',
       likesNumber: '22',
@@ -206,7 +337,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
           saveIPFS: true,
         }
     );
-    return resultNft;
+    return [ resultNft, imagePath];
   };
 
 
@@ -297,8 +428,16 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
             <FormItem label="Item Name">
               <Input defaultValue="NFT name"  onChange={(e) => setItemName(e.target.value)} />
             </FormItem>
-
             {/* ---- */}
+
+
+
+            <FormItem label="Choose category">
+              <CategoryListBox setCategory={setCategory} />
+            </FormItem>
+
+
+
             <FormItem
               label="External link"
               desc="Nftria will include a link to this URL on this item's detail page, so that users can click to learn more about it. You are welcome to link to your own webpage with more details."
@@ -329,23 +468,23 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
             <div className="w-full border-b-2 border-neutral-100 dark:border-neutral-700"></div>
 
             <div>
-              <Label>Choose collection</Label>
-              <div className="text-neutral-500 dark:text-neutral-400 text-sm">
+              <h3 className="text-lg sm:text-2xl font-semibold mb-5">
                 Choose an exiting collection or create a new one
-              </div>
+              </h3>
+              <Label>Choose collection</Label>
               <RadioGroup value={selected} onChange={setSelected}>
                 <RadioGroup.Label className="sr-only">
                   Server size
                 </RadioGroup.Label>
-                <div className="flex overflow-auto py-2 space-x-4 customScrollBar">
-                  {plans.map((plan, index) => (
+                <div className="flex  overflow-auto py-2 space-x-4 customScrollBar">
+                  {userCollections.map((plan, index) => (
                     <RadioGroup.Option
                       key={index}
                       value={plan}
                       className={({ active, checked }) =>
                         `${
                           active
-                            ? "ring-2 ring-offset-2 ring-offset-sky-300 ring-white ring-opacity-60"
+                            ? "ring-2 ml-2 ring-offset-2 ring-offset-sky-300 ring-white ring-opacity-60"
                             : ""
                         }
                   ${
@@ -368,7 +507,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                                   >
                                     <NcImage
                                       containerClassName="aspect-w-1 aspect-h-1 rounded-full overflow-hidden"
-                                      src={plan.featuredImage}
+                                      src={plan.image}
                                     />
                                   </RadioGroup.Description>
                                   {checked && (
@@ -395,6 +534,12 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                 </div>
               </RadioGroup>
             </div>
+
+            <FormItem label="Create new collection">
+              <Input onChange={(e) => setNewCollection(e.target.value)}   placeholder="Collection name" />
+
+              <ButtonPrimary onClick={(e: void) => addNewCollection()} className="flex-1 mt-3" >Add collection</ButtonPrimary>
+            </FormItem>
 
             {/* ---- */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-2.5">

@@ -113,3 +113,18 @@ Moralis.Cloud.define("getItem", async (request) => {
         "sellerAvatar": queryResult.attributes.user.attributes.avatar,
     };
 });
+Moralis.Cloud.define("fetchMyVotes", async(request) => {
+    const objectId = "8AiPsNBBcYXPIDkdgJp8QMv4"; //input your value here
+    const query = new Moralis.Query("MyObjects");
+
+    query.equalTo("objectId", objectId);
+    const queryResult = await query.first({ useMasterKey: true });
+    const voters = queryResult.get("voters");
+
+    let values = [];
+    voters.forEach((element) => {
+        values.push(element.someValue);
+    });
+
+    return values;
+});

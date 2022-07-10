@@ -24,9 +24,10 @@ const DEMO_PAGINATION: CustomLink[] = [
 
 export interface PaginationProps {
   className?: string;
+  setNftPerPage?: (active: string) => void;
 }
 
-const Pagination: FC<PaginationProps> = ({ className = "" }) => {
+const Pagination: FC<PaginationProps> = ({ className = "",setNftPerPage }) => {
   const renderItem = (pag: CustomLink, index: number) => {
     if (index === 0) {
       // RETURN ACTIVE PAGINATION

@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import BackgroundSection from "components/BackgroundSection/BackgroundSection";
 import NcImage from "shared/NcImage/NcImage";
@@ -15,9 +15,28 @@ import SectionBecomeAnAuthor from "components/SectionBecomeAnAuthor/SectionBecom
 
 export interface PageCollectionProps {
   className?: string;
+  items?: [],
 }
 
-const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
+const PageCollection: FC<PageCollectionProps> = (props,{ className = "",  }) => {
+  const [nftPage, setNftPage] = useState(1)
+
+  const [name, setName] = useState('')
+  const [image, setImage] = useState([])
+  const [NFTs, setNFTs] = useState([])
+
+  useEffect(() => {
+    //@ts-ignore
+    if(props.history) {
+      //@ts-ignore
+      setName(props.history.location.state.name)
+      //@ts-ignore
+      setNFTs(props.history.location.state.items)
+      //@ts-ignore
+      setImage(props.history.location.state.imgs)
+    }
+        },[])
+
   return (
     <div
       className={`nc-PageCollection  ${className}`}
@@ -41,7 +60,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
             <div className="flex flex-col sm:flex-row md:block sm:items-start sm:justify-between">
               <div className="w-40 sm:w-48 md:w-56 xl:w-60">
                 <NcImage
-                  src={nftsImgs[2]}
+                  src={image.length > 0 ? image[0] : nftsImgs[2]}
                   containerClassName="aspect-w-1 aspect-h-1 rounded-3xl overflow-hidden"
                 />
               </div>
@@ -87,7 +106,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
             <div className="mt-5 md:mt-0 md:ml-8 xl:ml-14 flex-grow">
               <div className="max-w-screen-sm ">
                 <h2 className="inline-block text-2xl sm:text-3xl lg:text-4xl font-semibold">
-                  {"Awesome NFTs collection "}
+                  {name}
                 </h2>
                 <span className="block mt-4 text-sm text-neutral-500 dark:text-neutral-400">
                   Karafuru is home to 5,555 generative arts where colors reign
@@ -136,7 +155,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                     Items
                   </span>
                   <span className="font-medium text-base mt-4 sm:text-xl sm:mt-6">
-                    2235
+                    {NFTs.length}
                   </span>
                   <span className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
                     total
@@ -156,14 +175,14 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
           {/* LOOP ITEMS */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 lg:mt-10">
-            {Array.from("11111111").map((_, index) => (
-              <CardNFT key={index} uri={''}
-                       isLiked={false}
-                       inStock={''}
-                       likesNumber={''}
-                       name={''}
-                       price={''} />
-            ))}
+            { NFTs.map((item, index) => {
+              if(item !== undefined && index < nftPage * 12) {
+                const nft = item
+                // @ts-ignore
+                return nft !== undefined &&  <CardNFT key={index} isLiked uri={nft.image } inStock={nft.inStock} likesNumber={nft.likesNumber} name={nft.name} price={nft.price} externalUrl={nft.externalUrl} id={''} address={''}
+                />
+              }
+            })}
           </div>
 
           {/* PAGINATION */}

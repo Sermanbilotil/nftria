@@ -16,7 +16,7 @@ import { useHistory } from "react-router-dom";
 import {
     userDataFetched,
     changeLoginState,
-    selectCurrentUserData, logutUser,
+    selectCurrentUserData, logoutUser,
 
 } from "app/userData/getUserDataReducer";
 
@@ -70,9 +70,8 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({className = ""}) => {
                 const ethAddress = user.get("ethAddress")
                 console.log('email',currentUserData.email,currentUserData.userName, user)
 
-
-
                 if( currentUserData.userName == undefined ) {
+                    console.log('username Unnamed now')
                     setUserData({userName: 'Unnamed'})
                 }
                 dispatch(userDataFetched({ ethAddress: ethAddress }))
@@ -110,13 +109,13 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({className = ""}) => {
 
 
     const login = async (i: number) => {
-        console.log('i', i)
+        console.log('i', i, !isAuthenticated, user)
         if (!isAuthenticated) {
             switch (i) {
                 case 0:
-                    return  await authenticate({signingMessage: "Log in using Moralis" })
+                    return  await authenticate({signingMessage: "Log in using Moralis and metamask" })
                         .then(function (user) {
-
+                            console.log('metAMASK LOGIN',  user);
                         })
                         .catch(function (error) {
                             console.log(error);
@@ -124,12 +123,8 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({className = ""}) => {
                 case 1:
                     return await authenticate({ provider: "walletconnect",
                         mobileLinks: [
-                            "rainbow",
                             "metamask",
-                            "argent",
                             "trust",
-                            "imtoken",
-                            "pillar",
                         ] })
                         .then(function (user) {
                             console.log('user walletconnect', user);
@@ -151,7 +146,7 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({className = ""}) => {
     const logOut = async () => {
         console.log("logged out");
         await logout();
-        dispatch(logutUser({login: false} ))
+        dispatch(logoutUser({login: false} ))
     }
 
     const renderContent = () => {

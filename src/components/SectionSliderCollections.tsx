@@ -4,6 +4,8 @@ import Glide from "@glidejs/glide";
 import CollectionCard from "./CollectionCard";
 import CollectionCard2 from "./CollectionCard2";
 import { Link } from "react-router-dom";
+import {useAppSelector} from "../app/hooks";
+import {selectCurrentAllData} from "../app/allData/getAllDataReducer";
 
 export interface SectionSliderCollectionsProps {
   className?: string;
@@ -43,10 +45,15 @@ const SectionSliderCollections: FC<SectionSliderCollectionsProps> = ({
 }) => {
   const [slider] = useState(new Glide(`.${UNIQUE_CLASS}`, OPTIONS));
 
+  const allCollections = useAppSelector(selectCurrentAllData);
+
+    console.log('allCollections first', allCollections )
   useEffect(() => {
     let moutedSlider = slider.mount();
     return () => moutedSlider.destroy();
   }, [slider]);
+
+
 
   const MyCollectionCard =
     cardStyle === "style1" ? CollectionCard : CollectionCard2;
@@ -64,47 +71,22 @@ const SectionSliderCollections: FC<SectionSliderCollectionsProps> = ({
         </Heading>
         <div className="glide__track" data-glide-el="track">
           <ul className="glide__slides">
-            <li className={`glide__slide`}>
-              <MyCollectionCard
-                imgs={[
-                  "https://images.unsplash.com/photo-1557672172-298e090bd0f1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-                  "https://images.unsplash.com/photo-1599054802207-91d346adc120?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-                  "https://images.unsplash.com/photo-1581985673473-0784a7a44e39?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDl8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
-                  "https://images.unsplash.com/photo-1557264305-7e2764da873b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE3fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60",
-                ]}
-              />
-            </li>
-            <li className={`glide__slide`}>
-              <MyCollectionCard
-                imgs={[
-                  "https://images.unsplash.com/photo-1618172193763-c511deb635ca?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1064&q=80",
-                  "https://images.unsplash.com/photo-1617791160505-6f00504e3519?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDl8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
-                  "https://images.unsplash.com/photo-1637611331620-51149c7ceb94?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDExfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60",
-                  "https://images.unsplash.com/photo-1618172193622-ae2d025f4032?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE2fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60",
-                ]}
-              />
-            </li>
-
-            <li className={`glide__slide`}>
-              <MyCollectionCard
-                imgs={[
-                  "https://images.unsplash.com/photo-1625521416008-78e00551375b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-                  "https://images.unsplash.com/photo-1626282874430-c11ae32d2898?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDF8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
-                  "https://images.unsplash.com/photo-1625527575307-13c5d315087b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDJ8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
-                  "https://images.unsplash.com/photo-1625527575322-791601f72b4d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDN8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
-                ]}
-              />
-            </li>
-            <li className={`glide__slide`}>
-              <MyCollectionCard
-                imgs={[
-                  "https://images.unsplash.com/photo-1622547748225-3fc4abd2cca0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1632&q=80",
-                  "https://images.unsplash.com/photo-1617791160588-241658c0f566?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDV8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
-                  "https://images.unsplash.com/photo-1626544827763-d516dce335e2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDEzfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60",
-                  "https://images.unsplash.com/photo-1627037558426-c2d07beda3af?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE4fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60",
-                ]}
-              />
-            </li>
+            {allCollections.collections   && allCollections.collections.map((card: any, i: number) => {
+              return <li className={`glide__slide`}>
+                <MyCollectionCard
+                    key={i}
+                    imgs={[
+                      card.image,
+                      card.image,
+                      card.image,
+                      card.image,
+                    ]}
+                    name={card.name}
+                    userName={card.userName}
+                    items={card.items}
+                />
+              </li>
+            })}
             <li className={`glide__slide   `}>
               <Link to={"/page-search"} className="block relative group">
                 <div className="relative rounded-2xl overflow-hidden h-[410px]">

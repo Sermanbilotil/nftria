@@ -41,7 +41,7 @@ export const userDataSlice = createSlice({
                 login: action.payload,
             };
         },
-        logutUser: (state,
+        logoutUser: (state,
                     action: PayloadAction<userDataState>) => {
             return {
                 ...state,
@@ -56,7 +56,7 @@ export const userDataSlice = createSlice({
 export const {
     userDataFetched,
     changeLoginState,
-    logutUser
+    logoutUser
 } = userDataSlice.actions;
 
 export const selectCurrentUserData = (state: RootState) =>

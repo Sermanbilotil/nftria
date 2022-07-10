@@ -8,12 +8,19 @@ import VerifyIcon from "./VerifyIcon";
 export interface CollectionCardProps {
   className?: string;
   imgs?: string[];
+  name?: string;
+  userName?: string,
+  items?: [],
 }
 
 const CollectionCard: FC<CollectionCardProps> = ({
   className,
   imgs = [nftsImgs[9], nftsImgs[10], nftsImgs[11], nftsImgs[8]],
+  name,
+    userName,
+    items
 }) => {
+
   return (
     <div
       className={`CollectionCard relative p-4 rounded-2xl overflow-hidden h-[410px] flex flex-col group ${className}`}
@@ -28,13 +35,13 @@ const CollectionCard: FC<CollectionCardProps> = ({
           <div className="ml-2 text-xs text-white">
             <span className="font-normal">by</span>
             {` `}
-            <span className="font-medium">Jane Cooper</span>
+            <span className="font-medium">{userName}</span>
           </div>
           <VerifyIcon iconClass="w-4 h-4" />
         </div>
         {/* TITLE */}
         <h2 className="font-semibold text-3xl mt-1.5 text-white">
-          Awesome collection
+          {name}
         </h2>
         {/* LISTS */}
         <div className="grid grid-cols-3 gap-4 mt-5">
@@ -52,7 +59,11 @@ const CollectionCard: FC<CollectionCardProps> = ({
           />
         </div>
       </div>
-      <Link to={"/page-collection"} className="absolute inset-0"></Link>
+      <Link  to={{pathname: `/page-collection/${name}`, state: {
+            name: name,
+          items: items,
+          imgs: imgs,
+        },}} className="absolute inset-0 "></Link>
     </div>
   );
 };

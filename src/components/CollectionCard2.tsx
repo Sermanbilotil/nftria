@@ -8,11 +8,17 @@ import VerifyIcon from "./VerifyIcon";
 export interface CollectionCard2Props {
   className?: string;
   imgs?: string[];
+  name?: string;
+  userName?: string,
+  items?: [],
 }
 
 const CollectionCard2: FC<CollectionCard2Props> = ({
   className,
   imgs = [nftsImgs[9], nftsImgs[10], nftsImgs[11], nftsImgs[8]],
+                                                     name,
+                                                     userName,
+    items
 }) => {
   return (
     <div className={`CollectionCard2 group relative ${className}`}>
@@ -27,7 +33,7 @@ const CollectionCard2: FC<CollectionCard2Props> = ({
       <div className="relative mt-5 ">
         {/* TITLE */}
         <h2 className="font-semibold text-2xl group-hover:text-primary-500 transition-colors">
-          Awesome collection
+          {name}
         </h2>
         {/* AUTHOR */}
         <div className="mt-2 flex justify-between">
@@ -37,8 +43,8 @@ const CollectionCard2: FC<CollectionCard2Props> = ({
               <span className="font-normal hidden sm:inline-block">
                 Creator
               </span>
-              {` `}
-              <span className="font-medium">{_getPersonNameRd()}</span>
+
+              <span className="font-medium"> {userName}</span>
             </div>
             <VerifyIcon iconClass="w-4 h-4" />
           </div>
@@ -47,7 +53,11 @@ const CollectionCard2: FC<CollectionCard2Props> = ({
           </span>
         </div>
       </div>
-      <Link to={"/page-collection"} className="absolute inset-0 "></Link>
+      <Link  to={{pathname: `/page-collection/${name}`, state: {
+          name: name,
+          items: items,
+              imgs: imgs,
+        },}} className="absolute inset-0 "></Link>
     </div>
   );
 };

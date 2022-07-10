@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { Helmet } from "react-helmet";
 import BackgroundSection from "components/BackgroundSection/BackgroundSection";
 import Pagination from "shared/Pagination/Pagination";
@@ -9,12 +9,21 @@ import HeaderFilterSearchPage from "components/HeaderFilterSearchPage";
 import Input from "shared/Input/Input";
 import ButtonCircle from "shared/Button/ButtonCircle";
 import CardNFT from "components/CardNFT";
+import {useAppSelector} from "../app/hooks";
+import {selectCurrentUserData} from "../app/userData/getUserDataReducer";
+import {selectCurrentAllData} from "../app/allData/getAllDataReducer";
 
 export interface PageSearchProps {
   className?: string;
 }
 
 const PageSearch: FC<PageSearchProps> = ({ className = "" }) => {
+  const [nftPage, setNftPage] = useState(1)
+
+  const allNFT = useAppSelector(selectCurrentAllData);
+
+
+
   return (
     <div className={`nc-PageSearch  ${className}`} data-nc-id="PageSearch">
       <Helmet>
@@ -83,26 +92,39 @@ const PageSearch: FC<PageSearchProps> = ({ className = "" }) => {
 
           {/* LOOP ITEMS */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 lg:mt-10">
-            {Array.from("11111111").map((_, index) => (
-              <CardNFT key={index} uri={''}
-                       isLiked={false}
-                       inStock={''}
-                       likesNumber={''}
-                       name={''}
-                       price={''} />
-            ))}
+            {allNFT.nfts !== undefined && allNFT.nfts.map((item, index) => {
+
+              if(item !== undefined && index < nftPage * 12) {
+                const nft = item.metadataObj
+                return nft !== undefined &&  <CardNFT
+                    key={index}
+                    isLiked
+                    uri={nft.image}
+                    inStock={nft.inStock}
+                    likesNumber={nft.likesNumber}
+                    name={nft.name}
+                    price={nft.price}
+                    externalUrl={nft.externalUrl}
+                    id={item.token_id}
+                    address={item.token_address}
+
+                />
+              }
+
+            })}
           </div>
 
           {/* PAGINATION */}
           <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
-            <Pagination />
-            <ButtonPrimary loading>Show me more</ButtonPrimary>
+            <Pagination  />
+
+            <ButtonPrimary onClick={() => setNftPage(nftPage + 1)}>Show me more</ButtonPrimary>
           </div>
         </main>
 
         {/* === SECTION 5 === */}
         <div className="relative py-16 lg:py-28">
-          <BackgroundSection />
+          <BackgroundSection  />
           <SectionSliderCollections />
         </div>
 

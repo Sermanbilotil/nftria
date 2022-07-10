@@ -81,7 +81,6 @@ const AccountPage: FC<AccountPageProps> = ({ className = "" }) => {
                 dispatch(userDataFetched({
                   photoSrc: result._url
                 }))
-
               },
               onError: (error: any) => console.log(error),
             });
