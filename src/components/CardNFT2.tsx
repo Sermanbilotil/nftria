@@ -12,7 +12,6 @@ import RemainingTimeNftCard from "./RemainingTimeNftCard";
 export interface CardNFT2Props {
   className?: string;
   isLiked?: boolean;
-  key?: number,
   uri?: string;
   inStock?: string;
   likesNumber?: string;

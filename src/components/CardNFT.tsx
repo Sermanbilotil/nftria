@@ -10,7 +10,7 @@ import { ClockIcon } from "@heroicons/react/outline";
 import ItemTypeVideoIcon from "./ItemTypeVideoIcon";
 
 export interface CardNFTProps {
-  key?: number,
+
   isLiked?: boolean;
   className?: string;
   uri?: string;
@@ -24,7 +24,7 @@ export interface CardNFTProps {
 
 }
 
-const CardNFT: FC<CardNFTProps> = ({key,
+const CardNFT: FC<CardNFTProps> = ({
                                      className = "",
                                      isLiked = true,
                                      uri= '',

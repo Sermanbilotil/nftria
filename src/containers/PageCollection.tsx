@@ -26,7 +26,7 @@ const PageCollection: FC<PageCollectionProps> = (props,{ className = "",  }) => 
   const [nftPage, setNftPage] = useState(1)
   //collection data
   const [name, setName] = useState('')
-  const [image, setImage] = useState([])
+  const [image, setImage] = useState('')
   const [NFTs, setNFTs] = useState([])
 
 
@@ -75,7 +75,7 @@ const PageCollection: FC<PageCollectionProps> = (props,{ className = "",  }) => 
             <div className="flex flex-col sm:flex-row md:block sm:items-start sm:justify-between">
               <div className="w-40 sm:w-48 md:w-56 xl:w-60">
                 <NcImage
-                  src={image.length > 0 ? image[0] : nftsImgs[2]}
+                  src={image ? image : nftsImgs[2]}
                   containerClassName="aspect-w-1 aspect-h-1 rounded-3xl overflow-hidden"
                 />
               </div>
