@@ -25,36 +25,31 @@ const PageCollection: FC<PageCollectionProps> = (props,{ className = "",  }) => 
   const currentUserData = useAppSelector(selectCurrentUserData);
   const [nftPage, setNftPage] = useState(1)
   //collection data
-  const [name, setName] = useState(window.location.pathname.split('/').reverse()[0])
+  const [name, setName] = useState('')
   const [image, setImage] = useState([])
   const [NFTs, setNFTs] = useState([])
 
 
   const allCollections = useMoralisQuery("collections", (query: any) =>
           //@ts-ignore
-          query.equalTo("name", name),
+          query.equalTo("name",  window.location.pathname.split('/').reverse()[0].replace(/%20/g, ' ')),
       [],
       {autoFetch: false});
 
   useEffect(() => {
+
      allCollections.fetch({
       onSuccess: (result) => {
-        setName(result[0].attributes.name)
-        setImage(result[0].attributes.image)
-        setNFTs(result[0].attributes.items)
+          console.log('result', result, window.location.pathname.split('/').reverse()[0].replace(/%20/g, ' '))
+          setName(result[0].attributes.name)
+          setImage(result[0].attributes.image)
+          setNFTs(result[0].attributes.items)
 
       }
     });
 
     console.log('new col', allCollections.fetch(), window.location.pathname.split('/').reverse()[0])
-    //@ts-ignore
-    if(props.history) {
-      //@ts-ignore
-      setName(props.history.location.state.name)
 
-      //@ts-ignore
-      setImage(props.history.location.state.imgs)
-    }
         },[])
 
   return (

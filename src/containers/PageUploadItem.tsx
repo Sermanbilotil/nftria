@@ -210,14 +210,18 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
 
   }
   const addNewCollection = () => {
-        const newCol =  [{
-          name: newCollection,
-          image: nftsImgs[1],
-        }]
-    // @ts-ignore
-    setSelected(newCol)
-    setUserCollections(userCollections.concat(newCol))
-    console.log(userCollections)
+    if(newCollection.length > 0) {
+      const newCol =  [{
+        name: newCollection,
+        image: nftsImgs[1],
+      }]
+      // @ts-ignore
+      setSelected(newCol)
+      setUserCollections(userCollections.concat(newCol))
+      console.log(userCollections)
+    } else {
+      alert("Pls,write collection name")
+    }
 
   }
 
