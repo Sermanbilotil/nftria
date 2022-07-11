@@ -12,9 +12,28 @@ import RemainingTimeNftCard from "./RemainingTimeNftCard";
 export interface CardNFT2Props {
   className?: string;
   isLiked?: boolean;
+  key?: number,
+  uri?: string;
+  inStock?: string;
+  likesNumber?: string;
+  name?: string;
+  price?: string;
+  externalUrl?: string;
+  id?: string,
+  address?: string,
 }
 
-const CardNFT2: FC<CardNFT2Props> = ({ className = "", isLiked }) => {
+const CardNFT2: FC<CardNFT2Props> = ({className = "",
+                                       isLiked = true,
+                                       uri= '',
+                                       inStock= '20',
+                                       likesNumber= 10,
+                                       name= 'NFT',
+                                       price= '100',
+                                       externalUrl = '',
+                                       id,
+                                       address
+}) => {
   const renderAvatars = () => {
     return (
       <div className="hidden md:flex -space-x-1.5 ">
@@ -43,7 +62,7 @@ const CardNFT2: FC<CardNFT2Props> = ({ className = "", isLiked }) => {
         <div>
           <NcImage
             containerClassName="flex aspect-w-11 aspect-h-12 w-full h-0 rounded-3xl overflow-hidden will-change-transform"
-            src={nftsImgs[Math.floor(Math.random() * nftsImgs.length)]}
+            src={uri || nftsImgs[Math.floor(Math.random() * nftsImgs.length)]}
             className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-300 ease-in-out rounded-3xl will-change-transform"
           />
         </div>
@@ -80,21 +99,26 @@ const CardNFT2: FC<CardNFT2Props> = ({ className = "", isLiked }) => {
 
           <div className="absolute left-4 bottom-0 w-48 ">
             <h2 className={`text-lg font-semibold `}>
-              CloneF #{Math.floor(Math.random() * 1000) + 1000}
+                {name}
             </h2>
 
             <div className="w-full mt-1.5 flex justify-between items-end ">
               {/* <Prices2 /> */}
               <Prices labelTextClassName="bg-white dark:bg-neutral-900 " />
               <span className="block text-neutral-500 dark:text-neutral-400 text-xs">
-                {Math.floor(Math.random() * 90) + 10} in stock
+                {inStock} in stock
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      <Link to={"/nft-detailt"} className="absolute inset-0"></Link>
+        <Link to={{pathname: `/nft-detailt/${externalUrl?.replace('https://ipfs.moralis.io:2053/ipfs/', '')}`, state: {
+                externalUrl: externalUrl,
+                uri: uri,
+                address: address,
+                id: id,
+            },}}  className="absolute inset-0"/>
     </div>
   );
 };

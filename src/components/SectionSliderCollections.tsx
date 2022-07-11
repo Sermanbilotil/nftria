@@ -43,14 +43,23 @@ const SectionSliderCollections: FC<SectionSliderCollectionsProps> = ({
   className = "",
   cardStyle = "style1",
 }) => {
+  const allCollections = useAppSelector(selectCurrentAllData).collections;
+
+
   const [slider] = useState(new Glide(`.${UNIQUE_CLASS}`, OPTIONS));
 
-  const allCollections = useAppSelector(selectCurrentAllData);
+  const [collections, setColeections] = useState([]);
 
-    console.log('allCollections first', allCollections )
+
   useEffect(() => {
-    let moutedSlider = slider.mount();
-    return () => moutedSlider.destroy();
+    setColeections(allCollections)
+  }, [allCollections]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      let moutedSlider = slider.mount();
+      return () => moutedSlider.destroy();
+    }, 600)
   }, [slider]);
 
 
@@ -71,10 +80,10 @@ const SectionSliderCollections: FC<SectionSliderCollectionsProps> = ({
         </Heading>
         <div className="glide__track" data-glide-el="track">
           <ul className="glide__slides">
-            {allCollections.collections   && allCollections.collections.map((card: any, i: number) => {
-              return <li className={`glide__slide`}>
+            {collections.map((card: any, i: number) => {
+              console.log('all last 24',card, collections)
+              return <li  key={i} className={`glide__slide`}>
                 <MyCollectionCard
-                    key={i}
                     imgs={[
                       card.image,
                       card.image,

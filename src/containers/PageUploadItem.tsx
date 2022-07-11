@@ -10,20 +10,12 @@ import { nftsImgs } from "contains/fakeData";
 import MySwitch from "components/MySwitch";
 import ButtonSecondary from "shared/Button/ButtonSecondary";
 import NcImage from "shared/NcImage/NcImage";
-
 import Web3 from "web3";
-import {AbiItem} from 'web3-utils';
-
-import {useMoralisWeb3Api,useWeb3ExecuteFunction,useMoralisQuery, useMoralisFile ,useNewMoralisObject,useMoralis} from "react-moralis";
-
-
-import {TokenContractAbi} from '../abi';
-import {marketplaceContractAbi} from '../abi';
 import {selectCurrentUserData, userDataFetched} from "../app/userData/getUserDataReducer";
 import {useAppDispatch, useAppSelector} from "../app/hooks";
-import ButtonDropdown from "../components/ButtonDropdown";
-import ArchiveFilterListBox from "../components/ArchiveFilterListBox";
 import CategoryListBox from "../components/CategoryListBox";
+//Moralis
+import {useMoralisWeb3Api,useWeb3ExecuteFunction,useMoralisQuery, useMoralisFile ,useNewMoralisObject,useMoralis} from "react-moralis";
 import Moralis from "moralis/types";
 
 
@@ -53,6 +45,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
   const [newCollection, setNewCollection] = useState('')
   const [photoSrc, setPhotoSrc] = useState('')
   const [itemName, setItemName] = useState('')
+  const [price, setPrice] = useState('')
   const [userLink, setUserLink] = useState('')
   const [itemDescription, setItemDescription] = useState('')
   const [itemCollection, setItemCOllection] = useState('')
@@ -169,7 +162,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
           collection: selected,
           royalties: royalties,
           sizeMb: sizeMb,
-          price: '100',
+          price: price,
           propertie: propertie,
           onSale: onSale.toString(),
           instantSale: instantSale.toString(),
@@ -194,14 +187,12 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
 
         const checkCollection =  allCollections.fetch({
           onSuccess: (result) => {
-            console.log('result',result, result.length)
             const  filteredCol = result.filter(item => {
               return item.attributes.name === selected.name
             })
             if(result.length === 0 || filteredCol.length == 0) {
               saveCollection(collectionData)
             } else {
-              console.log('exist')
               const items = filteredCol[0].attributes.items
               items.push(token)
 
@@ -274,7 +265,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
         collection: selected,
         royalties: royalties,
         sizeMb: sizeMb,
-        price: '100',
+        price: price,
         propertie: propertie,
         onSale: onSale.toString(),
         instantSale: instantSale.toString(),
@@ -324,7 +315,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
       name: itemName,
       category: category,
       collection: selected,
-      price: '100',
+      price: price,
       inStock: '25',
       likesNumber: '22',
       externalUrl: url,
@@ -430,13 +421,15 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
             </FormItem>
             {/* ---- */}
 
-
+            {/* ---- */}
+            <FormItem label="Item Price">
+              <Input defaultValue="NFT price"  onChange={(e) => setPrice(e.target.value)} />
+            </FormItem>
+            {/* ---- */}
 
             <FormItem label="Choose category">
               <CategoryListBox setCategory={setCategory} />
             </FormItem>
-
-
 
             <FormItem
               label="External link"

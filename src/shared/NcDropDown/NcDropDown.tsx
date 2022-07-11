@@ -33,6 +33,7 @@ const NcDropDown: FC<NcDropDownProps> = ({
   // @ts-ignore
   // @ts-ignore
   // @ts-ignore
+  // @ts-ignore
   return (
     <Menu as="div" className="relative inline-block text-left">
       <Menu.Button className={className} title={title}>
@@ -74,7 +75,7 @@ const NcDropDown: FC<NcDropDownProps> = ({
             {data.map((item) => (
               <Menu.Item
                 key={item.id}
-                onClick={() => onClick(item)}
+                // onClick={() => onClick(item)}
                 data-menu-item-id={item.id}
               >
                 {() =>

@@ -116,8 +116,6 @@ function App() {
         let collectionsArr: Moralis.Attributes[] = []
         await allCollections.fetch({
             onSuccess: (result) => {
-
-                console.log('all c', result)
                      result.map(col => {
                          const shortCol = {
                              name: col.attributes.name,
@@ -130,8 +128,6 @@ function App() {
                         return collectionsArr.push(shortCol)
                     })
                 console.log('arr',collectionsArr)
-
-
                 }})
         dispatch(nftDataFetched({ collections: collectionsArr }))
     };

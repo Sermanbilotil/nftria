@@ -8,7 +8,7 @@ export interface  allDataState {
     // state?: "loading" | "playing" | "paused" | "ended" | null;
 }
 
-const initialState: allDataState = {};
+const initialState: allDataState = {nfts: [], collections: []};
 
 export const allDataSlice = createSlice({
     name: "allData",

@@ -47,18 +47,25 @@ const SectionSliderCollections2: FC<SectionSliderCollections2Props> = ({
   className = "",
   cardStyle = "style1",
 }) => {
+  const allCollections = useAppSelector(selectCurrentAllData).collections;
+
   const [tabActive, setTabActive] = React.useState("Last 24 hours");
 
   const [slider] = useState(new Glide(`.${UNIQUE_CLASS}`, OPTIONS));
+  const [collections, setColeections] = useState([]);
 
-    const allCollections = useAppSelector(selectCurrentAllData);
-
-    console.log(allCollections.collections)
 
   useEffect(() => {
-    let moutedSlider = slider.mount();
-    return () => moutedSlider.destroy();
+    setColeections(allCollections)
+  }, [allCollections]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      let moutedSlider = slider.mount();
+      return () => moutedSlider.destroy();
+    }, 600)
   }, [slider]);
+
 
   const MyCollectionCard =
     cardStyle === "style1" ? CollectionCard : CollectionCard2;
@@ -133,10 +140,9 @@ const SectionSliderCollections2: FC<SectionSliderCollections2Props> = ({
       <div className={`${UNIQUE_CLASS} relative`}>
         <div className="glide__track" data-glide-el="track">
           <ul className="glide__slides">
-              {allCollections.collections   && allCollections.collections.map((card: any, i: number) => {
-                 return <li className={`glide__slide`}>
+              {collections.map((card: any, i: number) => {
+                 return <li   key={i} className={`glide__slide`}>
                       <MyCollectionCard
-                          key={i}
                           imgs={[
                               card.image,
                               card.image,
