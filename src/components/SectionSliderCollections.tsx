@@ -81,7 +81,7 @@ const SectionSliderCollections: FC<SectionSliderCollectionsProps> = ({
         <div className="glide__track" data-glide-el="track">
           <ul className="glide__slides">
             {collections.map((card: any, i: number) => {
-              console.log('all last 24',card, collections)
+
               return <li  key={i} className={`glide__slide`}>
                 <MyCollectionCard
                     imgs={[

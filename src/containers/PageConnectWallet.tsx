@@ -70,10 +70,10 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({className = ""}) => {
                 const ethAddress = user.get("ethAddress")
                 console.log('email',currentUserData.email,currentUserData.userName, user)
 
-                if( currentUserData.userName == undefined ) {
-                    console.log('username Unnamed now')
-                    setUserData({userName: 'Unnamed'})
-                }
+                // if( currentUserData.userName == undefined ) {
+                //     console.log('username Unnamed now')
+                //     setUserData({userName: 'Unnamed'})
+                // }
                 dispatch(userDataFetched({ ethAddress: ethAddress }))
                 hiatory.push("/");
             }

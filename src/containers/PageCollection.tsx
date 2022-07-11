@@ -12,6 +12,9 @@ import ButtonDropDownShare from "components/ButtonDropDownShare";
 import TabFilters from "components/TabFilters";
 import SectionSliderCollections from "components/SectionSliderCollections";
 import SectionBecomeAnAuthor from "components/SectionBecomeAnAuthor/SectionBecomeAnAuthor";
+import {useMoralisQuery} from "react-moralis";
+import {useAppSelector} from "../app/hooks";
+import {selectCurrentUserData} from "../app/userData/getUserDataReducer";
 
 export interface PageCollectionProps {
   className?: string;
@@ -19,19 +22,36 @@ export interface PageCollectionProps {
 }
 
 const PageCollection: FC<PageCollectionProps> = (props,{ className = "",  }) => {
+  const currentUserData = useAppSelector(selectCurrentUserData);
   const [nftPage, setNftPage] = useState(1)
-
-  const [name, setName] = useState('')
+  //collection data
+  const [name, setName] = useState(window.location.pathname.split('/').reverse()[0])
   const [image, setImage] = useState([])
   const [NFTs, setNFTs] = useState([])
 
+
+  const allCollections = useMoralisQuery("collections", (query: any) =>
+          //@ts-ignore
+          query.equalTo("name", name),
+      [],
+      {autoFetch: false});
+
   useEffect(() => {
+     allCollections.fetch({
+      onSuccess: (result) => {
+        setName(result[0].attributes.name)
+        setImage(result[0].attributes.image)
+        setNFTs(result[0].attributes.items)
+
+      }
+    });
+
+    console.log('new col', allCollections.fetch(), window.location.pathname.split('/').reverse()[0])
     //@ts-ignore
     if(props.history) {
       //@ts-ignore
       setName(props.history.location.state.name)
-      //@ts-ignore
-      setNFTs(props.history.location.state.items)
+
       //@ts-ignore
       setImage(props.history.location.state.imgs)
     }

@@ -43,7 +43,7 @@ const Avatar: FC<AvatarProps> = ({
         <img
           className={`absolute inset-0 w-full h-full object-cover ${radius}`}
           src={profilePhoto !== undefined ? profilePhoto : url}
-          alt={name}
+          alt={''}
         />
       )}
       <span className="wil-avatar__name">{name[0]}</span>
