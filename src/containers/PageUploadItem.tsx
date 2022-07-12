@@ -83,7 +83,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
     if (!isWeb3Enabled) {
       enableWeb3();
     }
-
+   
     allCollections.fetch({
       onSuccess: (result) => {
         console.log('result all', result, result.length)

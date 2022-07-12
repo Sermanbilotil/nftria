@@ -67,19 +67,25 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({className = ""}) => {
             if(isAuthenticated && user) {
                 fetchAllNfts()
 
-                const ethAddress = user.get("ethAddress")
+                const ethAddress = user?.get("ethAddress")
+                const userName = user?.get("username")
                 console.log('email',currentUserData.email,currentUserData.userName, user)
 
-                // if( currentUserData.userName == undefined ) {
-                //     console.log('username Unnamed now')
-                //     setUserData({userName: 'Unnamed'})
-                // }
+                if( userName.length > 22) {
+                    console.log('username Unnamed now')
+                    setUserData({userName: 'Unnamed'})
+                }
                 dispatch(userDataFetched({ ethAddress: ethAddress }))
                 hiatory.push("/");
             }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthenticated]);
 
+
+    useEffect(() => {
+        console.log('email',currentUserData.email,currentUserData.userName, user)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const fetchAllNfts = async () => {
 

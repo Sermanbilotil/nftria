@@ -21,7 +21,7 @@ import {useAppSelector} from "../../app/hooks";
 import {selectCurrentUserData} from "../../app/userData/getUserDataReducer";
 import ProfileIcon from "../../images/ribbon.png"
 import Label from "../../components/Label/Label";
-import {useMoralisQuery} from "react-moralis";
+import {useMoralis, useMoralisQuery} from "react-moralis";
 import Moralis from "moralis/types";
 import {Link} from "react-router-dom";
 
@@ -48,10 +48,12 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
     "Followers",
   ]);
 
+  const {user} = useMoralis();
 
   const currentUserData = useAppSelector(selectCurrentUserData);
   const allCollections = useMoralisQuery("collections", (query: any) =>
-          query.equalTo("ethAddress", currentUserData.ethAddress),
+          // @ts-ignore
+          query.equalTo("ethAddress",user?.get("ethAddress")),
       [],
       {autoFetch: false});
 
@@ -62,6 +64,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
 
 
   useEffect(() => {
+    console.log('start get col', currentUserData.ethAddress)
     allCollections.fetch({
       onSuccess: (result) => {
         console.log('result all', result, result.length)
@@ -77,7 +80,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
         setUserCollections(getCol)
       }
     })
-  }, [])
+  }, [currentUserData.ethAddress])
 
 
   return (
