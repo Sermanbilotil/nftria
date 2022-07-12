@@ -17,6 +17,7 @@ import CategoryListBox from "../components/CategoryListBox";
 //Moralis
 import {useMoralisWeb3Api,useWeb3ExecuteFunction,useMoralisQuery, useMoralisFile ,useNewMoralisObject,useMoralis} from "react-moralis";
 import Moralis from "moralis/types";
+import {upload} from "@testing-library/user-event/dist/upload";
 
 
 const web3 = new Web3(Web3.givenProvider);
@@ -584,7 +585,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
 
             {/* ---- */}
             <div className="pt-2 flex flex-col sm:flex-row space-y-3 sm:space-y-0 space-x-0 sm:space-x-3 ">
-              <ButtonPrimary onClick={(e: void) => addNewCollection()} className="flex-1" loading={isLoading} >Upload item</ButtonPrimary>
+              <ButtonPrimary onClick={(e: void) => uploadFile(e)} className="flex-1" loading={isLoading} >Upload item</ButtonPrimary>
 
               <ButtonSecondary className="flex-1">Preview item</ButtonSecondary>
 
