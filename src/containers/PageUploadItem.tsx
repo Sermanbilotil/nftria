@@ -556,7 +556,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
             </div>
 
             <FormItem label="Supply">
-              <Input defaultValue="Number of copies"  onChange={(e) => seSupply(e.target.value)} />
+              <Input placeholder="Number of copies"  onChange={(e) => seSupply(e.target.value)} />
             </FormItem>
 
             {/* ---- */}
