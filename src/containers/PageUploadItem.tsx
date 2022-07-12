@@ -83,7 +83,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
     if (!isWeb3Enabled) {
       enableWeb3();
     }
-   
+
     allCollections.fetch({
       onSuccess: (result) => {
         console.log('result all', result, result.length)
@@ -211,7 +211,10 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
 
   }
   const addNewCollection = () => {
-    if(newCollection.length > 0) {
+    const colExist = userCollections.some(col => col.name == newCollection)
+
+
+    if(newCollection.length > 0 && !colExist) {
       const newCol =  [{
         name: newCollection,
         image: nftsImgs[1],
@@ -221,7 +224,8 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
       setUserCollections(userCollections.concat(newCol))
       console.log(userCollections)
     } else {
-      alert("Pls,write collection name")
+      colExist ? alert("Pls,write a unique collection name")
+       : alert("Pls,write collection name")
     }
 
   }
@@ -580,7 +584,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
 
             {/* ---- */}
             <div className="pt-2 flex flex-col sm:flex-row space-y-3 sm:space-y-0 space-x-0 sm:space-x-3 ">
-              <ButtonPrimary onClick={(e: void) => uploadFile(e)} className="flex-1" loading={isLoading} >Upload item</ButtonPrimary>
+              <ButtonPrimary onClick={(e: void) => addNewCollection()} className="flex-1" loading={isLoading} >Upload item</ButtonPrimary>
 
               <ButtonSecondary className="flex-1">Preview item</ButtonSecondary>
 
