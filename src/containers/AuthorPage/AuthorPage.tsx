@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useState } from "react";
+import React, {FC, Fragment, useEffect, useState} from "react";
 import { Helmet } from "react-helmet";
 import BackgroundSection from "components/BackgroundSection/BackgroundSection";
 import NcImage from "shared/NcImage/NcImage";
@@ -13,18 +13,30 @@ import SectionBecomeAnAuthor from "components/SectionBecomeAnAuthor/SectionBecom
 import SocialsList from "shared/SocialsList/SocialsList";
 import FollowButton from "components/FollowButton";
 import VerifyIcon from "components/VerifyIcon";
-import { Tab } from "@headlessui/react";
+import {RadioGroup, Tab} from "@headlessui/react";
 import CardAuthorBox3 from "components/CardAuthorBox3/CardAuthorBox3";
 import ArchiveFilterListBox from "components/ArchiveFilterListBox";
 import SectionGridAuthorBox from "components/SectionGridAuthorBox/SectionGridAuthorBox";
 import {useAppSelector} from "../../app/hooks";
 import {selectCurrentUserData} from "../../app/userData/getUserDataReducer";
 import ProfileIcon from "../../images/ribbon.png"
-
+import Label from "../../components/Label/Label";
+import {useMoralisQuery} from "react-moralis";
+import Moralis from "moralis/types";
+import {Link} from "react-router-dom";
 
 export interface AuthorPageProps {
   className?: string;
 }
+
+const plans = [
+  {
+    name: "My First Collection",
+    image: nftsImgs[0],
+  },
+
+
+];
 
 const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
 
@@ -38,8 +50,34 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
 
 
   const currentUserData = useAppSelector(selectCurrentUserData);
+  const allCollections = useMoralisQuery("collections", (query: any) =>
+          query.equalTo("ethAddress", currentUserData.ethAddress),
+      [],
+      {autoFetch: false});
 
   const shortEth = currentUserData.ethAddress !== undefined && currentUserData.ethAddress.substr(1, 15) + '...' + currentUserData.ethAddress.substr(currentUserData.ethAddress.length - 4)
+
+  const [userCollections, setUserCollections] = useState<any[]>([])
+  const [selected, setSelected] = useState();
+
+
+  useEffect(() => {
+    allCollections.fetch({
+      onSuccess: (result) => {
+        console.log('result all', result, result.length)
+
+
+        const getCol: ((prevState: { name: string; image: string; }[]) => { name: string; image: string; }[]) | Moralis.Attributes[] = []
+
+        result.map(col => {
+          // @ts-ignore
+          return  getCol.push(col.attributes)
+        })
+        // @ts-ignore
+        setUserCollections(getCol)
+      }
+    })
+  }, [])
 
 
   return (
@@ -129,11 +167,13 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
             </div>
           </div>
         </div>
+
       </div>
       {/* ====================== END HEADER ====================== */}
 
       <div className="container py-16 lg:pb-28 lg:pt-20 space-y-16 lg:space-y-28">
         <main>
+
           <Tab.Group>
             <div className="flex flex-col lg:flex-row justify-between ">
               <Tab.List className="flex space-x-0 sm:space-x-2 overflow-x-auto ">
@@ -160,22 +200,67 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
             <Tab.Panels>
               <Tab.Panel className="">
                 {/* LOOP ITEMS */}
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 lg:mt-10">
-                  {Array.from("11111111").map((_, index) => (
-                    <CardNFT key={index} uri={''}
-                             isLiked={false}
-                             inStock={''}
-                             likesNumber={''}
-                             name={''}
-                             price={''}/>
-                  ))}
-                </div>
+                  <div className="mb-10 mt-10">
+                    <h3 className="text-lg sm:text-2xl font-semibold mb-5">
+                      Choose collections
+                    </h3>
+                    <RadioGroup value={selected}  onChange={setSelected}>
+                      <RadioGroup.Label className="sr-only">
+                        Server size
+                      </RadioGroup.Label>
+                      <div className="flex  overflow-auto py-2 space-x-4 customScrollBar">
+                        {userCollections.length > 0 && userCollections.map((plan, index) => {
 
-                {/* PAGINATION */}
-                <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
-                  <Pagination />
-                  <ButtonPrimary loading>Show me more</ButtonPrimary>
-                </div>
+                            return <RadioGroup.Option
+                                key={index}
+                                value={plan}
+                                className={({ active, checked }) =>
+                                    `ring-2 ml-2 ring-offset-2  ${
+                                        active
+                                            ? "ring-2 ml-2 ring-offset-2 ring-offset-sky-300 ring-white ring-opacity-60"
+                                            : ""
+                                    }
+                    relative  flex-shrink-0 w-44 rounded-xl border border-neutral-200 dark:border-neutral-700 px-6 py-5 cursor-pointer flex focus:outline-none `
+                                }
+                            >
+                              {({ active, checked }) => (
+                                  <>
+                                    <div className="flex items-center justify-between w-full">
+                                      <div className="flex items-center">
+                                        <div className="text-sm">
+                                          <div className="flex items-center justify-between">
+                                            <RadioGroup.Description
+                                                as="div"
+                                                className={"rounded-full w-16"}
+                                            >
+                                              <NcImage
+                                                  containerClassName="aspect-w-1 aspect-h-1 rounded-full overflow-hidden"
+                                                  src={plan.image}
+                                              />
+                                            </RadioGroup.Description>
+                                          </div>
+                                          <RadioGroup.Label
+                                              as="p"
+                                              className={`font-semibold mt-3`}
+                                          >
+                                            {plan.name}
+                                          </RadioGroup.Label>
+                                          <Link  to={{pathname: `/page-collection/${plan.name}`, state: {
+                                              name: plan.name,
+                                            },}} className="absolute inset-0 "></Link>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </>
+                              )}
+
+                            </RadioGroup.Option>
+                        })}
+                      </div>
+
+                    </RadioGroup>
+                  </div>
+
               </Tab.Panel>
               <Tab.Panel className="">
                 {/* LOOP ITEMS */}
@@ -259,6 +344,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
               </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
+
         </main>
 
         {/* === SECTION 5 === */}
@@ -273,5 +359,18 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
     </div>
   );
 };
-
+function CheckIcon(props: any) {
+  return (
+      <svg viewBox="0 0 24 24" fill="none" {...props}>
+        <circle cx={12} cy={12} r={12} fill="#fff" opacity="0.2" />
+        <path
+            d="M7 13l3 3 7-7"
+            stroke="#fff"
+            strokeWidth={1.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+      </svg>
+  );
+}
 export default AuthorPage;

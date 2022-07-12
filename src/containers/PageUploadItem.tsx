@@ -46,6 +46,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
   const [photoSrc, setPhotoSrc] = useState('')
   const [itemName, setItemName] = useState('')
   const [price, setPrice] = useState('')
+  const [supply, seSupply] = useState('')
   const [userLink, setUserLink] = useState('')
   const [itemDescription, setItemDescription] = useState('')
   const [itemCollection, setItemCOllection] = useState('')
@@ -320,7 +321,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
       category: category,
       collection: selected,
       price: price,
-      inStock: '25',
+      inStock: supply,
       likesNumber: '22',
       externalUrl: url,
     };
@@ -553,6 +554,10 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
                 <Input onChange={(e) => setPropertie(e.target.value)} placeholder="Propertie" />
               </FormItem>
             </div>
+
+            <FormItem label="Supply">
+              <Input defaultValue="Number of copies"  onChange={(e) => seSupply(e.target.value)} />
+            </FormItem>
 
             {/* ---- */}
             <MySwitch enabled={onSale} setEnabled={setOnSale} />
