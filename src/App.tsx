@@ -38,7 +38,7 @@ function App() {
             const facebook = user.get("facebook")
             const twitter = user.get("twitter")
             const telegram = user.get("telegram")
-
+            const userNFT = user.get("userNFT")
 
             dispatch(userDataFetched({
                 userName: userName,
@@ -50,6 +50,7 @@ function App() {
                 facebook: facebook,
                 twitter: twitter,
                 telegram: telegram,
+                userNFT: userNFT,
             }))
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps

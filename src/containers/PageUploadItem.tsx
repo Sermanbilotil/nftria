@@ -17,6 +17,7 @@ import CategoryListBox from "../components/CategoryListBox";
 //Moralis
 import {useMoralisWeb3Api,useWeb3ExecuteFunction,useMoralisQuery, useMoralisFile ,useNewMoralisObject,useMoralis} from "react-moralis";
 import Moralis from "moralis/types";
+import {upload} from "@testing-library/user-event/dist/upload";
 
 
 const web3 = new Web3(Web3.givenProvider);
@@ -45,7 +46,16 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
   const [newCollection, setNewCollection] = useState('')
   const [photoSrc, setPhotoSrc] = useState('')
   const [itemName, setItemName] = useState('')
+
+  //NFT Models
+  const [userModels, setUserModels] = useState([])
+  const [filteredModels, setFilteredModels] = useState([])
+  const [showModels, setShowModels] = useState(false)
+  const [model, setModel] = useState('')
+
+
   const [price, setPrice] = useState('')
+  const [supply, seSupply] = useState('')
   const [userLink, setUserLink] = useState('')
   const [itemDescription, setItemDescription] = useState('')
   const [itemCollection, setItemCOllection] = useState('')
@@ -91,7 +101,6 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
           setUserCollections(plans)
           return
         }
-
         const getCol: ((prevState: { name: string; image: string; }[]) => { name: string; image: string; }[]) | Moralis.Attributes[] = []
 
         result.map(col => {
@@ -102,7 +111,22 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
         setUserCollections(getCol)
       }
     })
+    getUserModels()
+
   }, [])
+
+  const getUserModels = () => {
+
+   if(currentUserData.userNFT !== undefined) {
+     const allModels = currentUserData.userNFT.split('*')
+     // @ts-ignore
+     setUserModels(allModels)
+     // @ts-ignore
+     setFilteredModels(allModels)
+
+   }
+
+  }
 
 
   const mintNFT = async (account: any, uri: string, img: string) => {
@@ -152,6 +176,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
         // @ts-ignore
         const token = {
           name: itemName,
+          unitymodel: model,
           userId: userId,
           userName: userName,
           ethAddress: address,
@@ -180,6 +205,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
           userId: userId,
           userName: userName,
           ethAddress: address,
+          unitymodel: model,
           image: selected.image,
           description: '',
           items: [token]
@@ -210,7 +236,10 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
 
   }
   const addNewCollection = () => {
-    if(newCollection.length > 0) {
+    const colExist = userCollections.some(col => col.name == newCollection)
+
+
+    if(newCollection.length > 0 && !colExist) {
       const newCol =  [{
         name: newCollection,
         image: nftsImgs[1],
@@ -220,7 +249,8 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
       setUserCollections(userCollections.concat(newCol))
       console.log(userCollections)
     } else {
-      alert("Pls,write collection name")
+      colExist ? alert("Pls,write a unique collection name")
+       : alert("Pls,write collection name")
     }
 
   }
@@ -294,6 +324,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
       await mintNFT(account, nftResult[0].ipfs(),nftResult[1] );
 
     } catch (error: any) {
+      setIsLoading(false)
       alert(error.message);
     }
 
@@ -320,7 +351,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
       category: category,
       collection: selected,
       price: price,
-      inStock: '25',
+      inStock: supply,
       likesNumber: '22',
       externalUrl: url,
     };
@@ -335,7 +366,21 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
     return [ resultNft, imagePath];
   };
 
+  const searchModels = (e: any) => {
+    setShowModels(true )
 
+    const filteredModels = userModels.filter(item => {
+      const value = e.target.value.toLowerCase()
+      // @ts-ignore
+      return item.toLowerCase().search(value) !== -1
+    })
+
+    setFilteredModels(filteredModels)
+
+    setModel(e.target.value)
+  }
+
+  // @ts-ignore
   return (
     <div
       className={`nc-PageUploadItem ${className}`}
@@ -420,7 +465,37 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
             </div>
 
             {/* ---- */}
+            <FormItem label="Your model">
+
+              <form className="flex items-center mt-2">
+                <label htmlFor="simple-search" className="sr-only">Search</label>
+                <div className="relative w-full">
+                  <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                    <svg aria-hidden="true" className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor"
+                         viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"/>
+                    </svg>
+                  </div>
+                  <input type="text" id="simple-search" className="bg-gray-50  border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-neutral-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                         placeholder="Select model"
+                          value={model}
+                         onChange={(e) => searchModels(e)}
+                         onClick={() => showModels ?  setShowModels(false) : setShowModels(true ) }
+                  />
+
+                  {showModels &&  <ul  className=" h-auto max-h-[20em] z-20 absolute left-0 right-0 m-0 bg-gray-50 dark:bg-neutral-900  overflow-auto py-2  border border-neutral-200 dark:border-neutral-700 cursor-pointer focus:outline-none" >
+                        {filteredModels.map(item => {
+                          return  <li onClick={() => [setModel(item), setShowModels(false)]} className=" text-white mt-3 bg-gray-50 dark:bg-neutral-900 px-6 py-5  pt-1 pb-1 bg-gray-50  cursor-pointer   hover:bg-neutral-100 dark:hover:bg-neutral-800" >{item}</li>
+                        })}
+                      </ul> }
+                </div>
+              </form>
+            </FormItem>
+            {/* ---- */}
+
+            {/* ---- */}
             <FormItem label="Item Name">
+
               <Input defaultValue="NFT name"  onChange={(e) => setItemName(e.target.value)} />
             </FormItem>
             {/* ---- */}
@@ -553,6 +628,10 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
                 <Input onChange={(e) => setPropertie(e.target.value)} placeholder="Propertie" />
               </FormItem>
             </div>
+
+            <FormItem label="Supply">
+              <Input placeholder="Number of copies"  onChange={(e) => seSupply(e.target.value)} />
+            </FormItem>
 
             {/* ---- */}
             <MySwitch enabled={onSale} setEnabled={setOnSale} />

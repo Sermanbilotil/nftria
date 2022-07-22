@@ -12,6 +12,7 @@ export interface  userDataState {
     facebook?: string,
     twitter?: string,
     telegram?: string,
+    userNFT?: string,
     ethAddress?: string,
     login?: boolean,
     error?: boolean,
