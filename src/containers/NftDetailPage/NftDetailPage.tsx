@@ -129,7 +129,7 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
           {/* ---------- 4 ----------  */}
           <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-8 text-sm">
             <div className="flex items-center ">
-              <Avatar profilePhoto={'https://gxo6ck5wjopq.usemoralis.com:2053/server/files/h0KVrD5XXXT7pqwmZL7USCuNrdqiq2icJpwobjSq/92a00c935fcac3738f70504acab26d6e_photo.jpg'} sizeClass="h-9 w-9" radius="rounded-full" />
+              <Avatar profilePhoto={creatorPhote || 'https://gxo6ck5wjopq.usemoralis.com:2053/server/files/h0KVrD5XXXT7pqwmZL7USCuNrdqiq2icJpwobjSq/92a00c935fcac3738f70504acab26d6e_photo.jpg'} sizeClass="h-9 w-9" radius="rounded-full" />
               <span className="ml-2.5 text-neutral-500 dark:text-neutral-400 flex flex-col">
                 <span className="text-sm">Creator</span>
                 <span className="text-neutral-900 dark:text-neutral-200 font-medium flex items-center">
@@ -142,7 +142,7 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
             <div className="hidden sm:block h-6 border-l border-neutral-200 dark:border-neutral-700"></div>
             <div className="flex items-center">
               <Avatar
-                imgUrl={collectionPng || 'https://gxo6ck5wjopq.usemoralis.com:2053/server/files/h0KVrD5XXXT7pqwmZL7USCuNrdqiq2icJpwobjSq/92a00c935fcac3738f70504acab26d6e_photo.jpg'}
+                imgUrl={collectionPng.replace('./', '/') || 'https://gxo6ck5wjopq.usemoralis.com:2053/server/files/h0KVrD5XXXT7pqwmZL7USCuNrdqiq2icJpwobjSq/92a00c935fcac3738f70504acab26d6e_photo.jpg'}
                 sizeClass="h-9 w-9"
                 radius="rounded-full"
               />

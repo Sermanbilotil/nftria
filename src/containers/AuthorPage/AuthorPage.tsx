@@ -18,15 +18,16 @@ import CardAuthorBox3 from "components/CardAuthorBox3/CardAuthorBox3";
 import ArchiveFilterListBox from "components/ArchiveFilterListBox";
 import SectionGridAuthorBox from "components/SectionGridAuthorBox/SectionGridAuthorBox";
 import {useAppSelector} from "../../app/hooks";
-import {selectCurrentUserData} from "../../app/userData/getUserDataReducer";
 import ProfileIcon from "../../images/ribbon.png"
 import Label from "../../components/Label/Label";
-
 import {useMoralis, useMoralisQuery, useMoralisWeb3Api} from "react-moralis";
 import Moralis from "moralis/types";
 import {Link} from "react-router-dom";
 import CollectionCard from "../../components/CollectionCard";
 import CollectionCard2 from "../../components/CollectionCard2";
+//reduxcers
+import {selectCurrentUserData} from "../../app/userData/getUserDataReducer";
+import {selectCurrentAllData} from "../../app/allData/getAllDataReducer";
 
 
 export interface AuthorPageProps {
@@ -47,7 +48,6 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
   const MyCollectionCard =
       cardStyle === "style1" ? CollectionCard : CollectionCard2;
 
-
   let [categories] = useState([
     "Collections",
     "Collectibles",
@@ -60,6 +60,8 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
   const {user} = useMoralis();
 
   const currentUserData = useAppSelector(selectCurrentUserData);
+  const allNFT = useAppSelector(selectCurrentAllData);
+
   const allCollections = useMoralisQuery("collections", (query: any) =>
           query.equalTo("ethAddress",user?.get("ethAddress")),
       [],
@@ -74,11 +76,10 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
 
 
   useEffect(() => {
-    console.log('start get col', currentUserData.ethAddress)
 
     allCollections.fetch({
       onSuccess: (result) => {
-        console.log('result all', result, result.length)
+
         if(result.length === 0) {
           setUserCollections(plans)
           return
@@ -93,17 +94,23 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
 
       }
     })
-    fetchNFTOwners()
+    tabFilters()
   }, [])
 
   useEffect(() => {
   }, [currentUserData.ethAddress])
 
-  const fetchNFTOwners = async () => {
-
+  const tabFilters = async () => {
+    if(allNFT !== undefined && allNFT.nfts !== undefined) {
+      const created = allNFT.nfts.filter((nft: any) => {
+        if(nft !== undefined &&  nft.metadataObj !== undefined) {
+         return nft.metadataObj.creator == currentUserData.ethAddress
+        }
+      })
+      setCreatedNFTs(created)
+    }
 
   };
-
 
   return (
     <div className={`nc-AuthorPage  ${className}`} data-nc-id="AuthorPage">
