@@ -54,6 +54,7 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
   useEffect(() => {
     fetchNFTContent()
     getOwner()
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -61,6 +62,8 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
   const currentUserData = useAppSelector(selectCurrentUserData);
   const [ownerName, setOwnerName] = useState('')
   const [ownerPhote, setOwnerPhoto] = useState('')
+  const [creatorName, setCreatorName] = useState('')
+  const [creatorPhote, setCreatorPhoto] = useState('')
 
   const getOwner = () => {
     Moralis.Cloud.run('getUser', { ethAddress: currentUserData.ethAddress })
@@ -71,6 +74,7 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
         })
 
   }
+
 
   const fetchNFTContent = async () => {
     //@ts-ignore
@@ -88,7 +92,19 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
       //@ts-ignore
       const url =  props.history.location.state.externalUrl
       const res = await axios.get(url);
+
+      console.log('cre', res.data)
+      if(res.data.creator) {
+        Moralis.Cloud.run('getUser', { ethAddress:  res.data.creator })
+            .then(result =>   {
+              console.log('creator', result[0].attributes)
+              setCreatorName(result[0].attributes.userName)
+              setCreatorPhoto(result[0].attributes.photoSrc)
+            })
+      }
+
       console.log('res', res.data)
+
 
       setNftData(res.data)
     }
@@ -115,11 +131,11 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
           {/* ---------- 4 ----------  */}
           <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-8 text-sm">
             <div className="flex items-center ">
-              <Avatar sizeClass="h-9 w-9" radius="rounded-full" />
+              <Avatar profilePhoto={creatorPhote} sizeClass="h-9 w-9" radius="rounded-full" />
               <span className="ml-2.5 text-neutral-500 dark:text-neutral-400 flex flex-col">
                 <span className="text-sm">Creator</span>
                 <span className="text-neutral-900 dark:text-neutral-200 font-medium flex items-center">
-                  <span>{personNames[1]}</span>
+                  <span>{creatorName}</span>
                   <VerifyIcon iconClass="w-4 h-4" />
                   <VerifyIcon iconClass="w-4 h-4" />
                 </span>

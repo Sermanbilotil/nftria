@@ -274,7 +274,6 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
       onSuccess: (data: any) => {
         // Execute any logic that should take place after the object is saved.
         console.log(data)
-        alert("New object created with objectId: " + data);
 
       },
       onError: (error: any) => {
