@@ -90,6 +90,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
         })
         // @ts-ignore
         setUserCollections(getCol)
+
       }
     })
     fetchNFTOwners()
@@ -229,61 +230,26 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
                     <h3 className="text-lg sm:text-2xl font-semibold mb-5">
                       Choose collections
                     </h3>
-                    <RadioGroup value={selected}  onChange={setSelected}>
-                      <RadioGroup.Label className="sr-only">
-                        Server size
-                      </RadioGroup.Label>
-                      <div className="flex  overflow-auto py-2 space-x-4 customScrollBar">
+
+                      <div className="flex  overflow-auto py-2 space-x-4 customScrollBar ">
                         {userCollections.length > 0 && userCollections.map((plan, index) => {
 
-                          return <RadioGroup.Option
-                              key={index}
-                              value={plan}
-                              className={({ active, checked }) =>
-                                  `ring-2 ml-2 ring-offset-2  ${
-                                      active
-                                          ? "ring-2 ml-2 ring-offset-2 ring-offset-sky-300 ring-white ring-opacity-60"
-                                          : ""
-                                  }
-                    relative  flex-shrink-0 w-44 rounded-xl border border-neutral-200 dark:border-neutral-700 px-6 py-5 cursor-pointer flex focus:outline-none `
-                              }
-                          >
-                            {({ active, checked }) => (
-                                <>
-                                  <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center">
-                                      <div className="text-sm">
-                                        <div className="flex items-center justify-between">
-                                          <RadioGroup.Description
-                                              as="div"
-                                              className={"rounded-full w-16"}
-                                          >
-                                            <NcImage
-                                                containerClassName="aspect-w-1 aspect-h-1 rounded-full overflow-hidden"
-                                                src={plan.image}
-                                            />
-                                          </RadioGroup.Description>
-                                        </div>
-                                        <RadioGroup.Label
-                                            as="p"
-                                            className={`font-semibold mt-3`}
-                                        >
-                                          {plan.name}
-                                        </RadioGroup.Label>
-                                        <Link  to={{pathname: `/page-collection/${plan.name}`, state: {
-                                            name: plan.name,
-                                          },}} className="absolute inset-0 "></Link>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </>
-                            )}
-
-                          </RadioGroup.Option>
+                          return  <li   key={index} className={`list-none min-w-[350px] `}>
+                            <MyCollectionCard
+                                imgs={[
+                                  plan.image,
+                                  plan.image,
+                                  plan.image,
+                                  plan.image,
+                                ]}
+                                name={plan.name}
+                                userName={plan.userName}
+                                items={plan.items}
+                            />
+                          </li>
                         })}
                       </div>
 
-                    </RadioGroup>
                     {/*<RadioGroup value={selected}  onChange={setSelected}>*/}
                     {/*  <RadioGroup.Label className="sr-only">*/}
                     {/*    Server size*/}

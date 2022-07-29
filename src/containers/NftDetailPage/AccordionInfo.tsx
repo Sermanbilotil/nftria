@@ -10,7 +10,7 @@ export interface AccordionProps {
     address?: string,
 }
 
-const AccordionInfo: FC<AccordionProps> = ({description, id, address}) => {
+const AccordionInfo: FC<AccordionProps> = ({description, id , address }) => {
   return (
     <div className="w-full rounded-2xl">
       <Disclosure defaultOpen>
@@ -49,7 +49,7 @@ const AccordionInfo: FC<AccordionProps> = ({description, id, address}) => {
               <br />
               <span>Contract Address</span>
               <span className="text-base text-neutral-900 dark:text-neutral-100 line-clamp-1">
-                {address}
+                {address !== undefined && address?.length > 0 ? address : "0x0b874cf7b842ce12cc8af81a200dc0db0d1b5f3f"}
               </span>
 
               <br />
