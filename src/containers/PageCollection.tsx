@@ -193,6 +193,9 @@ const PageCollection: FC<PageCollectionProps> = (props,{ className = "",  }) => 
             { NFTs.map((item, index) => {
               if(item !== undefined && index < nftPage * 12) {
                 const nft = item
+                const token_address = currentUserData.nfts
+
+                console.log('nft item',item)
                 // @ts-ignore
                 return nft !== undefined &&  <CardNFT key={index} isLiked uri={nft.image } inStock={nft.inStock} likesNumber={nft.likesNumber} name={nft.name} price={nft.price} externalUrl={nft.externalUrl} id={''} address={''}
                 />

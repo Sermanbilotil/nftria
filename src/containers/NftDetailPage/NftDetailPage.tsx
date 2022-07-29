@@ -16,6 +16,9 @@ import ItemTypeVideoIcon from "components/ItemTypeVideoIcon";
 import LikeButton from "components/LikeButton";
 import AccordionInfo from "./AccordionInfo";
 import SectionBecomeAnAuthor from "components/SectionBecomeAnAuthor/SectionBecomeAnAuthor";
+import {useAppSelector} from "../../app/hooks";
+import {selectCurrentUserData} from "../../app/userData/getUserDataReducer";
+import Moralis from "moralis";
 const axios = require('axios');
 
 
@@ -25,7 +28,7 @@ export interface NftDetailPageProps {
 
 }
 export interface NFTProps {
-  collection: string;
+  collection: {name: string};
   description: string;
   instantSale: string;
   link: string;
@@ -50,11 +53,24 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
 
   useEffect(() => {
     fetchNFTContent()
+    getOwner()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
+  const currentUserData = useAppSelector(selectCurrentUserData);
+  const [ownerName, setOwnerName] = useState('')
+  const [ownerPhote, setOwnerPhoto] = useState('')
 
+  const getOwner = () => {
+    Moralis.Cloud.run('getUser', { ethAddress: currentUserData.ethAddress })
+        .then(result =>   {
+          console.log('owner', result[0].attributes.userName)
+          setOwnerName(result[0].attributes.userName)
+          setOwnerPhoto(result[0].attributes.photoSrc)
+        })
+
+  }
 
   const fetchNFTContent = async () => {
     //@ts-ignore
@@ -68,6 +84,7 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
       setTokenId(props.history.location.state.id)
       //@ts-ignore
       setAddress(props.history.location.state.address)
+
       //@ts-ignore
       const url =  props.history.location.state.externalUrl
       const res = await axios.get(url);
@@ -118,7 +135,9 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
               <span className="ml-2.5 text-neutral-500 dark:text-neutral-400 flex flex-col">
                 <span className="text-sm">Collection</span>
                 <span className="text-neutral-900 dark:text-neutral-200 font-medium flex items-center">
-                  <span>{"The Moon Ape"}</span>
+                  <span>
+                    {nftData.collection && nftData.collection.name}
+                  </span>
                   <VerifyIcon iconClass="w-4 h-4" />
                 </span>
               </span>
@@ -226,7 +245,7 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
 
         {/* ---------- 9 ----------  */}
         <div className="pt-9">
-          <TabDetail />
+          <TabDetail ownerPhoto={ownerPhote} ownerName={ownerName} />
         </div>
       </div>
     );

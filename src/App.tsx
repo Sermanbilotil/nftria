@@ -104,6 +104,7 @@ function App() {
                 return undefined;
             }
         });
+        console.log('nfts', tokenUri)
         dispatch(nftDataFetched({nfts: tokenUri}))
     };
 

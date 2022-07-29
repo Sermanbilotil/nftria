@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, {FC, useEffect, useState} from "react";
 import { Link } from "react-router-dom";
 import Avatar from "shared/Avatar/Avatar";
 import NcImage from "shared/NcImage/NcImage";
@@ -8,6 +8,11 @@ import LikeButton from "./LikeButton";
 import Prices from "./Prices";
 import { ClockIcon } from "@heroicons/react/outline";
 import ItemTypeVideoIcon from "./ItemTypeVideoIcon";
+
+import {current} from "@reduxjs/toolkit";
+import {useAppSelector} from "../app/hooks";
+import {selectCurrentUserData} from "../app/userData/getUserDataReducer";
+import Moralis from "moralis";
 
 export interface CardNFTProps {
 
@@ -36,6 +41,18 @@ const CardNFT: FC<CardNFTProps> = ({
     id,
     address
                                    }) => {
+
+    const currentUserData = useAppSelector(selectCurrentUserData);
+    const [ownerName, setOwnerName] = useState('')
+
+    useEffect(() => {
+        Moralis.Cloud.run('getUser', { ethAddress: currentUserData.ethAddress })
+            .then(result =>   {
+                    setOwnerName(result[0].userName)
+            })
+    }, [])
+
+
   const renderAvatars = () => {
     return (
       <div className="flex -space-x-1 ">

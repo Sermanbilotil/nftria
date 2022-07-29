@@ -255,6 +255,19 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
 
   }
 
+  const fetchTransactions = async () => {
+
+    // get BSC transactions for a given address
+    // with most recent transactions appearing first
+    const options = {
+      chain: "mumbai",
+      address: currentUserData.ethAddress,
+    };
+    // @ts-ignore
+    const bscTransactions = await Web3Api.account.getTransactions(options);
+    console.log('bscTransactions',bscTransactions);
+  };
+
   const saveCollection = async (collectionData: any) => {
     console.log('save data', collectionData)
     save(collectionData, {
@@ -304,6 +317,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
         onSale: onSale.toString(),
         instantSale: instantSale.toString(),
         unlock: unlock.toString(),
+        creator: currentUserData.ethAddress,
       }
 
     try {
@@ -350,6 +364,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
       name: itemName,
       category: category,
       collection: selected,
+      creator: currentUserData.ethAddress,
       price: price,
       inStock: supply,
       likesNumber: '22',

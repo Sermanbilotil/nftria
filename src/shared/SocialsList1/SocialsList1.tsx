@@ -11,11 +11,10 @@ export interface SocialsList1Props {
 }
 
 const socials: SocialType[] = [
-  { name: "Facebook", icon: facebook, href: "#" },
-  { name: "Vimeo", icon: vimeo, href: "#" },
-  { name: "Youtube", icon: youtube, href: "#" },
-  { name: "Telegram", icon: telegram, href: "#" },
-  { name: "Twitter", icon: twitter, href: "#" },
+
+  { name: "Discord", icon: youtube, href: "https://discord.gg/CFeGtpuUcj" },
+  { name: "Telegram", icon: telegram, href: "https://t.me/+JXSMmycQwjozOTBl" },
+  { name: "Twitter", icon: twitter, href: "https://twitter.com/nftria3D" },
 ];
 
 const SocialsList1: FC<SocialsList1Props> = ({ className = "space-y-3" }) => {
@@ -25,6 +24,7 @@ const SocialsList1: FC<SocialsList1Props> = ({ className = "space-y-3" }) => {
         href={item.href}
         className="flex items-center text-2xl text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white leading-none space-x-2 group"
         key={index}
+        target="_blank"
       >
         <div className="flex-shrink-0 w-5 ">
           <img src={item.icon} alt="" />

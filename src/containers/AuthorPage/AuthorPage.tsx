@@ -22,13 +22,16 @@ import {selectCurrentUserData} from "../../app/userData/getUserDataReducer";
 import ProfileIcon from "../../images/ribbon.png"
 import Label from "../../components/Label/Label";
 
-import {useMoralis, useMoralisQuery} from "react-moralis";
+import {useMoralis, useMoralisQuery, useMoralisWeb3Api} from "react-moralis";
 import Moralis from "moralis/types";
 import {Link} from "react-router-dom";
+import CollectionCard from "../../components/CollectionCard";
+import CollectionCard2 from "../../components/CollectionCard2";
 
 
 export interface AuthorPageProps {
   className?: string;
+  cardStyle?: "style1" | "style2";
 }
 
 const plans = [
@@ -39,9 +42,14 @@ const plans = [
 
 ];
 
-const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
+const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",}) => {
+  const Web3Api = useMoralisWeb3Api()
+  const MyCollectionCard =
+      cardStyle === "style1" ? CollectionCard : CollectionCard2;
+
 
   let [categories] = useState([
+    "Collections",
     "Collectibles",
     "Created",
     "Liked",
@@ -61,6 +69,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
 
 
   const [userCollections, setUserCollections] = useState<any[]>([])
+  const [createdNFTs, setCreatedNFTs] = useState<any[]>([])
   const [selected, setSelected] = useState();
 
 
@@ -83,12 +92,16 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
         setUserCollections(getCol)
       }
     })
-
+    fetchNFTOwners()
   }, [])
 
   useEffect(() => {
   }, [currentUserData.ethAddress])
 
+  const fetchNFTOwners = async () => {
+
+
+  };
 
 
   return (
@@ -209,6 +222,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
               </div>
             </div>
             <Tab.Panels>
+
               <Tab.Panel className="">
                 {/* LOOP ITEMS */}
                   <div className="mb-10 mt-10">
@@ -222,54 +236,77 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
                       <div className="flex  overflow-auto py-2 space-x-4 customScrollBar">
                         {userCollections.length > 0 && userCollections.map((plan, index) => {
 
-                            return <RadioGroup.Option
-                                key={index}
-                                value={plan}
-                                className={({ active, checked }) =>
-                                    `ring-2 ml-2 ring-offset-2  ${
-                                        active
-                                            ? "ring-2 ml-2 ring-offset-2 ring-offset-sky-300 ring-white ring-opacity-60"
-                                            : ""
-                                    }
+                          return <RadioGroup.Option
+                              key={index}
+                              value={plan}
+                              className={({ active, checked }) =>
+                                  `ring-2 ml-2 ring-offset-2  ${
+                                      active
+                                          ? "ring-2 ml-2 ring-offset-2 ring-offset-sky-300 ring-white ring-opacity-60"
+                                          : ""
+                                  }
                     relative  flex-shrink-0 w-44 rounded-xl border border-neutral-200 dark:border-neutral-700 px-6 py-5 cursor-pointer flex focus:outline-none `
-                                }
-                            >
-                              {({ active, checked }) => (
-                                  <>
-                                    <div className="flex items-center justify-between w-full">
-                                      <div className="flex items-center">
-                                        <div className="text-sm">
-                                          <div className="flex items-center justify-between">
-                                            <RadioGroup.Description
-                                                as="div"
-                                                className={"rounded-full w-16"}
-                                            >
-                                              <NcImage
-                                                  containerClassName="aspect-w-1 aspect-h-1 rounded-full overflow-hidden"
-                                                  src={plan.image}
-                                              />
-                                            </RadioGroup.Description>
-                                          </div>
-                                          <RadioGroup.Label
-                                              as="p"
-                                              className={`font-semibold mt-3`}
+                              }
+                          >
+                            {({ active, checked }) => (
+                                <>
+                                  <div className="flex items-center justify-between w-full">
+                                    <div className="flex items-center">
+                                      <div className="text-sm">
+                                        <div className="flex items-center justify-between">
+                                          <RadioGroup.Description
+                                              as="div"
+                                              className={"rounded-full w-16"}
                                           >
-                                            {plan.name}
-                                          </RadioGroup.Label>
-                                          <Link  to={{pathname: `/page-collection/${plan.name}`, state: {
-                                              name: plan.name,
-                                            },}} className="absolute inset-0 "></Link>
+                                            <NcImage
+                                                containerClassName="aspect-w-1 aspect-h-1 rounded-full overflow-hidden"
+                                                src={plan.image}
+                                            />
+                                          </RadioGroup.Description>
                                         </div>
+                                        <RadioGroup.Label
+                                            as="p"
+                                            className={`font-semibold mt-3`}
+                                        >
+                                          {plan.name}
+                                        </RadioGroup.Label>
+                                        <Link  to={{pathname: `/page-collection/${plan.name}`, state: {
+                                            name: plan.name,
+                                          },}} className="absolute inset-0 "></Link>
                                       </div>
                                     </div>
-                                  </>
-                              )}
+                                  </div>
+                                </>
+                            )}
 
-                            </RadioGroup.Option>
+                          </RadioGroup.Option>
                         })}
                       </div>
 
                     </RadioGroup>
+                    {/*<RadioGroup value={selected}  onChange={setSelected}>*/}
+                    {/*  <RadioGroup.Label className="sr-only">*/}
+                    {/*    Server size*/}
+                    {/*  </RadioGroup.Label>*/}
+                    {/*  <div className="flex  overflow-auto py-2 space-x-4 customScrollBar">*/}
+                    {/*    {userCollections.length > 0 && userCollections.map((plan, index) => {*/}
+                    {/*        return <li   key={index} className={`glide__slide`}>*/}
+                    {/*          <MyCollectionCard*/}
+                    {/*              imgs={[*/}
+                    {/*                plan.image,*/}
+                    {/*                plan.image,*/}
+                    {/*                plan.image,*/}
+                    {/*                plan.image,*/}
+                    {/*              ]}*/}
+                    {/*              name={plan.name}*/}
+                    {/*              userName={plan.userName}*/}
+                    {/*              items={plan.items}*/}
+                    {/*          />*/}
+                    {/*        </li>*/}
+                    {/*    })}*/}
+                    {/*  </div>*/}
+
+                    {/*</RadioGroup>*/}
                   </div>
 
               </Tab.Panel>
@@ -277,7 +314,38 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
                 {/* LOOP ITEMS */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 lg:mt-10">
                   {currentUserData.nfts !== undefined && currentUserData.nfts.map((item, index) => {
-                      if(item !== undefined) {
+                    if(item !== undefined) {
+                      const nft = item.metadataObj
+                      return nft !== undefined &&  <CardNFT
+                          key={index}
+                          isLiked
+                          uri={nft.image}
+                          inStock={nft.inStock}
+                          likesNumber={nft.likesNumber}
+                          name={nft.name}
+                          price={nft.price}
+                          externalUrl={nft.externalUrl}
+                          id={item.token_id}
+                          address={item.token_address}
+
+                      />
+                    }
+
+                  })}
+                </div>
+
+                {/* PAGINATION */}
+                <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
+                  <Pagination />
+                  <ButtonPrimary loading>Show me more</ButtonPrimary>
+                </div>
+              </Tab.Panel>
+              <Tab.Panel className="">
+                {/* LOOP ITEMS */}
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 lg:mt-10">
+                  { createdNFTs.map((item, index) => {
+                      if(item !== undefined && item.metadataObj) {
+
                         const nft = item.metadataObj
                         return nft !== undefined &&  <CardNFT
                             key={index}
