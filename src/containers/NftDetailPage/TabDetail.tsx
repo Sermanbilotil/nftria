@@ -26,7 +26,7 @@ const TabDetail: FC<TabProps> = ({ownerPhoto, ownerName}) => {
             }`}
           >
             <div className="flex items-center">
-              <Avatar sizeClass="h-10 w-10" radius="rounded-full" />
+              <Avatar profilePhoto={'https://gxo6ck5wjopq.usemoralis.com:2053/server/files/h0KVrD5XXXT7pqwmZL7USCuNrdqiq2icJpwobjSq/2e7614ddcbdf6a263e62741a90bd70e1_photo.jpg'} sizeClass="h-10 w-10" radius="rounded-full" />
               <span className="ml-4 text-neutral-500 dark:text-neutral-400 flex flex-col">
                 <span className="flex items-center text-sm">
                   <span className="">

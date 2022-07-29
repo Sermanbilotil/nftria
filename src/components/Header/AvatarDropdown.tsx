@@ -59,7 +59,7 @@ const AvatarDropdown: FC<AvatarDropdownProps> = (props: AvatarDropdownProps) => 
                       <div className="overflow-hidden rounded-3xl shadow-lg ring-1 ring-black ring-opacity-5">
                           <div className="relative grid grid-cols-1 gap-6 bg-white dark:bg-neutral-800 py-7 px-6">
                               <div className="flex items-center space-x-3">
-                                  <Avatar imgUrl={currentUserData.photoSrc || ProfileIcon} sizeClass="w-12 h-12" />
+                                  <Avatar imgUrl={currentUserData.photoSrc || 'https://gxo6ck5wjopq.usemoralis.com:2053/server/files/h0KVrD5XXXT7pqwmZL7USCuNrdqiq2icJpwobjSq/92a00c935fcac3738f70504acab26d6e_photo.jpg'} sizeClass="w-12 h-12" />
 
                                   <div className="flex-grow">
                                       <h4 className="font-semibold">{currentUserData.userName}</h4>
