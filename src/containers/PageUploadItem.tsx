@@ -18,6 +18,7 @@ import CategoryListBox from "../components/CategoryListBox";
 import {useMoralisWeb3Api,useWeb3ExecuteFunction,useMoralisQuery, useMoralisFile ,useNewMoralisObject,useMoralis} from "react-moralis";
 import Moralis from "moralis/types";
 import {upload} from "@testing-library/user-event/dist/upload";
+import Avatar from "../shared/Avatar/Avatar";
 
 
 const web3 = new Web3(Web3.givenProvider);
@@ -44,6 +45,9 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
   const [file, setFile] = useState(null)
   const [userCollections, setUserCollections] = useState(plans)
   const [newCollection, setNewCollection] = useState('')
+  const [collectionPhoto, setCollectionPhoto] = useState<any>()
+  const [collectionPhotoURL, setCollectionPhotoURL] = useState<any>()
+
   const [photoSrc, setPhotoSrc] = useState('')
   const [itemName, setItemName] = useState('')
 
@@ -237,23 +241,38 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
   }
   const addNewCollection = () => {
     const colExist = userCollections.some(col => col.name == newCollection)
+    if(collectionPhoto) {
+      saveFile("photo.jpg", collectionPhoto, {
+        type: "image/png",
+        onSuccess: (result: any) => {
 
-
-    if(newCollection.length > 0 && !colExist) {
-      const newCol =  [{
-        name: newCollection,
-        image: nftsImgs[1],
-      }]
-      // @ts-ignore
-      setSelected(newCol)
-      setUserCollections(userCollections.concat(newCol))
-      console.log(userCollections)
-    } else {
-      colExist ? alert("Pls,write a unique collection name")
-       : alert("Pls,write collection name")
+          if(newCollection.length > 0 && !colExist) {
+            const newCol =  [{
+              name: newCollection,
+              image: result._url.length > 0 ?  result._url : nftsImgs[1],
+            }]
+            // @ts-ignore
+            setSelected(newCol)
+            setUserCollections(userCollections.concat(newCol))
+            console.log(userCollections)
+          } else {
+            colExist ? alert("Pls,write a unique collection name")
+                : alert("Pls,write collection name")
+          }
+        },
+        onError: (error: any) => console.log('error',error),
+      });
     }
 
+
+
   }
+  const takePhoto = (e: any) => {
+    setCollectionPhoto(e.target.files[0])
+
+    setCollectionPhotoURL(URL.createObjectURL(e.target.files[0]))
+  }
+
 
   const fetchTransactions = async () => {
 
@@ -351,6 +370,9 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
       } else if (itemName.length == 0 ) {
         alert('Please give the item a name')
         return
+      } else if (price.length == 0 ) {
+        alert('Enter a price')
+        return
       }
     console.log('uploadNftMetada',url)
     const image = new Moralis.File(itemName, file);
@@ -393,6 +415,8 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
 
     setModel(e.target.value)
   }
+
+
 
   // @ts-ignore
   return (
@@ -498,8 +522,8 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
                   />
 
                   {showModels &&  <ul  className=" h-auto max-h-[20em] z-20 absolute left-0 right-0 m-0 bg-gray-50 dark:bg-neutral-900  overflow-auto py-2  border border-neutral-200 dark:border-neutral-700 cursor-pointer focus:outline-none" >
-                        {filteredModels.map(item => {
-                          return  <li onClick={() => [setModel(item), setShowModels(false)]} className=" text-white mt-3 bg-gray-50 dark:bg-neutral-900 px-6 py-5  pt-1 pb-1 bg-gray-50  cursor-pointer   hover:bg-neutral-100 dark:hover:bg-neutral-800" >{item}</li>
+                        {filteredModels.map((item, i) => {
+                          return  <li key={i} onClick={() => [setModel(item), setShowModels(false)]} className=" text-white mt-3 bg-gray-50 dark:bg-neutral-900 px-6 py-5  pt-1 pb-1 bg-gray-50  cursor-pointer   hover:bg-neutral-100 dark:hover:bg-neutral-800" >{item}</li>
                         })}
                       </ul> }
                 </div>
@@ -516,7 +540,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
 
             {/* ---- */}
             <FormItem label="Item Price">
-              <Input defaultValue="NFT price"  onChange={(e) => setPrice(e.target.value)} />
+              <Input defaultValue="100"   onChange={(e) => setPrice(e.target.value)} />
             </FormItem>
             {/* ---- */}
 
@@ -560,7 +584,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
               <Label>Choose collection</Label>
               <RadioGroup value={selected} onChange={setSelected}>
                 <RadioGroup.Label className="sr-only">
-                  Server size
+                  Collections list
                 </RadioGroup.Label>
                 <div className="flex  overflow-auto py-2 space-x-4 customScrollBar">
                   {userCollections.map((plan, index) => (
@@ -622,10 +646,44 @@ const PageUploadItem: FC<PageUploadItemProps> = ({className = ""}) => {
             </div>
 
             <FormItem label="Create new collection">
+
+              <div className="flex-shrink-0 flex items-start mb-4 mt-3">
+                <div className="relative rounded-full overflow-hidden flex">
+                  <Avatar profilePhoto={collectionPhotoURL|| nftsImgs[3]} sizeClass="w-32 h-32" />
+
+                  <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-neutral-50 cursor-pointer">
+                    <svg
+                        width="30"
+                        height="30"
+                        viewBox="0 0 30 30"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                          d="M17.5 5H7.5C6.83696 5 6.20107 5.26339 5.73223 5.73223C5.26339 6.20107 5 6.83696 5 7.5V20M5 20V22.5C5 23.163 5.26339 23.7989 5.73223 24.2678C6.20107 24.7366 6.83696 25 7.5 25H22.5C23.163 25 23.7989 24.7366 24.2678 24.2678C24.7366 23.7989 25 23.163 25 22.5V17.5M5 20L10.7325 14.2675C11.2013 13.7988 11.8371 13.5355 12.5 13.5355C13.1629 13.5355 13.7987 13.7988 14.2675 14.2675L17.5 17.5M25 12.5V17.5M25 17.5L23.0175 15.5175C22.5487 15.0488 21.9129 14.7855 21.25 14.7855C20.5871 14.7855 19.9513 15.0488 19.4825 15.5175L17.5 17.5M17.5 17.5L20 20M22.5 5H27.5M25 2.5V7.5M17.5 10H17.5125"
+                          stroke="currentColor"
+                          strokeWidth={1.5}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                      />
+                    </svg>
+
+                    <span className="mt-1 text-xs">Change Image</span>
+                  </div>
+                  <input
+                      type="file"
+                      onChange={takePhoto}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                </div>
+              </div>
+
+
               <Input onChange={(e) => setNewCollection(e.target.value)}   placeholder="Collection name" />
 
               <ButtonPrimary onClick={(e: void) => addNewCollection()} className="flex-1 mt-3" >Add collection</ButtonPrimary>
             </FormItem>
+
 
             {/* ---- */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-2.5">

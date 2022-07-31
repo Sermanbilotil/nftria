@@ -60,7 +60,7 @@ function App() {
         console.log('account', account)
         const options = {
             chain: "mumbai",
-            address: account,
+            address: user && user.get("ethAddress"),
             token_address: "0x0b874cF7b842Ce12Cc8aF81a200dC0Db0d1b5f3F",
         };
 
@@ -77,7 +77,7 @@ function App() {
 
         });
         dispatch(userDataFetched({nfts: tokenUri}))
-        console.log('user tokens', tokenUri)
+        console.log('user tokens app js', tokenUri,user && user.get("ethAddress"))
 
     };
 

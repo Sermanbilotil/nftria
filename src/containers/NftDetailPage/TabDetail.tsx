@@ -4,15 +4,35 @@ import { personNames } from "contains/fakeData";
 import Avatar from "shared/Avatar/Avatar";
 import VerifyIcon from "components/VerifyIcon";
 import {CardNFTProps} from "../../components/CardNFT";
+import { Link } from "react-router-dom";
 
 
 export interface TabProps {
 
   ownerPhoto?:string,
   ownerName?: string,
+  owner?: {
+    profilePhoto?: File | undefined,
+    photoSrc?: string,
+    userName?: string,
+    email?: string,
+    aboutUser?: string,
+    website?: string,
+    facebook?: string,
+    twitter?: string,
+    telegram?: string,
+    userNFT?: string,
+    ethAddress?: string,
+    login?: boolean,
+    error?: boolean,
+    // state?: "loading" | "playing" | "paused" | "ended" | null;
+  },
 }
 
-const TabDetail: FC<TabProps> = ({ownerPhoto, ownerName}) => {
+
+
+
+const TabDetail: FC<TabProps> = ({ownerPhoto, ownerName,owner}) => {
   const TABS = ["Bid History", "Provenance", "Owner"];
 
   const renderTabBidHistory = () => {
@@ -86,6 +106,9 @@ const TabDetail: FC<TabProps> = ({ownerPhoto, ownerName}) => {
 
   const renderTabOwner = () => {
     return (
+        <Link  to={{pathname: `/page-author/${owner && owner.ethAddress}`, state: {
+            creator: owner
+          },}}>
       <div className="flex items-center py-4">
         <Avatar profilePhoto={ownerPhoto} sizeClass="h-11 w-11" radius="rounded-full" />
         <span className="ml-2.5 text-neutral-500 dark:text-neutral-400 flex flex-col">
@@ -96,6 +119,7 @@ const TabDetail: FC<TabProps> = ({ownerPhoto, ownerName}) => {
           </span>
         </span>
       </div>
+        </Link>
     );
   };
 

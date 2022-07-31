@@ -125,6 +125,7 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({className = ""}) => {
                         })
                         .catch(function (error) {
                             console.log(error);
+                            alert(error)
                         });
                 case 1:
                     return await authenticate({ provider: "walletconnect",
@@ -138,9 +139,8 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({className = ""}) => {
                         })
                         .catch(function (error) {
                             console.log(error);
+                            alert(error)
                         });
-
-
 
             }
 

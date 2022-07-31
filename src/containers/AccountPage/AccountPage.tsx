@@ -61,6 +61,7 @@ const AccountPage: FC<AccountPageProps> = ({ className = "" }) => {
         uploadFile()
 
       setUserData(userData)
+    alert('User data updated')
 
   }
   const takePhoto = (e: any) => {
@@ -117,11 +118,6 @@ const AccountPage: FC<AccountPageProps> = ({ className = "" }) => {
         break;
     }
   }
-
-
-
-
-
 
 
   return (
@@ -285,7 +281,7 @@ const AccountPage: FC<AccountPageProps> = ({ className = "" }) => {
                     defaultValue={currentUserData.ethAddress}
                   />
 
-                  <span className="absolute right-2.5 cursor-pointer top-1/2 -translate-y-1/2 ">
+                  <div className="absolute right-2.5 cursor-pointer top-1/2 -translate-y-1/2 active:opacity-[0.5]" onClick={() => currentUserData.ethAddress !== undefined ? navigator.clipboard.writeText(currentUserData.ethAddress) : ''}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                       <path
                         d="M21.6602 10.44L20.6802 14.62C19.8402 18.23 18.1802 19.69 15.0602 19.39C14.5602 19.35 14.0202 19.26 13.4402 19.12L11.7602 18.72C7.59018 17.73 6.30018 15.67 7.28018 11.49L8.26018 7.30001C8.46018 6.45001 8.70018 5.71001 9.00018 5.10001C10.1702 2.68001 12.1602 2.03001 15.5002 2.82001L17.1702 3.21001C21.3602 4.19001 22.6402 6.26001 21.6602 10.44Z"
@@ -302,7 +298,7 @@ const AccountPage: FC<AccountPageProps> = ({ className = "" }) => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                  </span>
+                  </div>
                 </div>
               </div>
 

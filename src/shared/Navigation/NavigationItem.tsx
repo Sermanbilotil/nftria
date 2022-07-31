@@ -14,7 +14,7 @@ export interface MegamenuItem {
 export interface NavItemType {
   id: string;
   name: string;
-  href: keyof LocationStates | "#" | "/#";
+  href: keyof LocationStates | string ;
   targetBlank?: boolean;
   children?: NavItemType[];
   megaMenu?: MegamenuItem[];

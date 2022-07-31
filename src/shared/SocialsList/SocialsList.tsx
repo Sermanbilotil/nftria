@@ -1,9 +1,9 @@
 import { SocialType } from "shared/SocialsShare/SocialsShare";
 import React, { FC } from "react";
-import facebook from "images/socials/facebook.svg";
-import twitter from "images/socials/twitter.svg";
-import telegram from "images/socials/telegram.svg";
-import youtube from "images/socials/youtube.svg";
+import facebookIcon from "images/socials/facebook.svg";
+import twitterIcon from "images/socials/twitter.svg";
+import telegramIcon from "images/socials/telegram.svg";
+import youtubeIcon from "images/socials/youtube.svg";
 import {useAppSelector} from "../../app/hooks";
 import {selectCurrentUserData} from "../../app/userData/getUserDataReducer";
 
@@ -11,6 +11,9 @@ export interface SocialsListProps {
   className?: string;
   itemClass?: string;
   socials?: SocialType[];
+  facebook?: string
+  twitter?: string,
+  telegram?: string,
 }
 
 
@@ -19,16 +22,18 @@ export interface SocialsListProps {
 const SocialsList: FC<SocialsListProps> = ({
   className = "",
   itemClass = "block w-6 h-6",
-
+  facebook= '',
+    twitter= '',
+    telegram= '',
 }) => {
 
   const currentUserData = useAppSelector(selectCurrentUserData);
 
   const  socials = [
-    { name: "Facebook", icon: facebook, href: currentUserData.facebook },
-    { name: "Twitter", icon: twitter, href: currentUserData.twitter },
-    { name: "Youtube", icon: youtube, href: '#'},
-    { name: "Telegram", icon: telegram, href: currentUserData.telegram },
+    { name: "Facebook", icon: facebookIcon, href: facebook },
+    { name: "Twitter", icon: twitterIcon, href: twitter },
+    // { name: "Youtube", icon: youtubeIcon, href: '#'},
+    { name: "Telegram", icon: telegramIcon, href: telegram },
   ];
 
 
@@ -41,7 +46,7 @@ const SocialsList: FC<SocialsListProps> = ({
         <a
           key={i}
           className={`${itemClass}`}
-          href={item.href}
+          href={item.href?.includes('https://') ? item.href : 'https://' + item.href }
           target="_blank"
           rel="noopener noreferrer"
           title={item.name}

@@ -21,19 +21,40 @@ import {useAppSelector} from "../../app/hooks";
 import ProfileIcon from "../../images/ribbon.png"
 import Label from "../../components/Label/Label";
 import {useMoralis, useMoralisQuery, useMoralisWeb3Api} from "react-moralis";
-import Moralis from "moralis/types";
+import Moralis from "moralis";
 import {Link} from "react-router-dom";
 import CollectionCard from "../../components/CollectionCard";
 import CollectionCard2 from "../../components/CollectionCard2";
+
 //reduxcers
-import {selectCurrentUserData} from "../../app/userData/getUserDataReducer";
+import {changeLoginState, selectCurrentUserData, userDataFetched} from "../../app/userData/getUserDataReducer";
 import {selectCurrentAllData} from "../../app/allData/getAllDataReducer";
 
 
 export interface AuthorPageProps {
   className?: string;
   cardStyle?: "style1" | "style2";
+  history?: any ;
 }
+
+export interface  userDataState {
+  profilePhoto?: File | undefined,
+  photoSrc?: string,
+  userName?: string,
+  email?: string,
+  aboutUser?: string,
+  website?: string,
+  facebook?: string,
+  twitter?: string,
+  telegram?: string,
+  userNFT?: string,
+  ethAddress?: string,
+  login?: boolean,
+  error?: boolean,
+  nfts?: ({ metadataObj: any; token_id: string; token_address: string; owner_of: string; } | undefined)[] | undefined
+  // state?: "loading" | "playing" | "paused" | "ended" | null;
+}
+
 
 const plans = [
   {
@@ -43,7 +64,7 @@ const plans = [
 
 ];
 
-const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",}) => {
+const AuthorPage: FC<AuthorPageProps> = (props, { className = "" ,cardStyle = "style1",}) => {
   const Web3Api = useMoralisWeb3Api()
   const MyCollectionCard =
       cardStyle === "style1" ? CollectionCard : CollectionCard2;
@@ -59,23 +80,41 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
 
   const {user} = useMoralis();
 
-  const currentUserData = useAppSelector(selectCurrentUserData);
+  let currentUserData = useAppSelector(selectCurrentUserData);
+
+
   const allNFT = useAppSelector(selectCurrentAllData);
 
-  const allCollections = useMoralisQuery("collections", (query: any) =>
-          query.equalTo("ethAddress",user?.get("ethAddress")),
+
+  const collectionEth = window.location.pathname.split('/').reverse()[0].replace(/%20/g, ' ')
+  let allCollections = useMoralisQuery("collections", (query: any) =>
+          query.equalTo("ethAddress",collectionEth),
       [],
-      {autoFetch: false});
+      {autoFetch: true, live: true});
 
-  const shortEth = currentUserData.ethAddress !== undefined && currentUserData.ethAddress.substr(1, 15) + '...' + currentUserData.ethAddress.substr(currentUserData.ethAddress.length - 4)
 
+  const [nftPage, setNftPage] = useState(1)
 
   const [userCollections, setUserCollections] = useState<any[]>([])
   const [createdNFTs, setCreatedNFTs] = useState<any[]>([])
   const [selected, setSelected] = useState();
 
+  const [userData, setUserData] = useState<userDataState>({});
+  const [userNfts, setUserNfts] = useState<any[] | undefined>([]);
+
+  const shortEth = userData.ethAddress !== undefined ? userData.ethAddress.substr(1, 15) + '...' + userData.ethAddress.substr(userData.ethAddress.length - 4) : ''
+
 
   useEffect(() => {
+
+    if(props.history.location.state  && props.history.location.state.creator) {
+      console.log('history', props.history)
+      setUserData(props.history.location.state.creator)
+      fetchUserNfts(props.history.location.state.creator.ethAddress)
+    } else {
+      console.log('main', currentUserData)
+      setUserData(currentUserData)
+    }
 
     allCollections.fetch({
       onSuccess: (result) => {
@@ -89,28 +128,87 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
           // @ts-ignore
           return  getCol.push(col.attributes)
         })
+        console.log('user col', getCol, collectionEth)
         // @ts-ignore
         setUserCollections(getCol)
-
       }
     })
-    tabFilters()
+
   }, [])
 
   useEffect(() => {
-  }, [currentUserData.ethAddress])
+    tabFilters(collectionEth)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allNFT]);
 
-  const tabFilters = async () => {
+  useEffect(() => {
+
+    Moralis.Cloud.run('getUser', { ethAddress:  collectionEth })
+        .then(result =>   {
+          setUserData(result[0].attributes)
+
+        })
+    tabFilters(collectionEth)
+    fetchUserNfts(collectionEth)
+    getUserCollections()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [window.location.pathname]);
+
+  const getUserCollections = async () => {
+    const collections = Moralis.Object.extend("collections");
+    const query = new Moralis.Query(collections);
+    query.equalTo("ethAddress", collectionEth);
+    const object = await query.find();
+    // @ts-ignore
+    let DATA = JSON.parse(
+        JSON.stringify(object)
+    )
+    setUserCollections(DATA)
+
+  }
+
+  const tabFilters = (eth: any) => {
+    const address = eth
+
     if(allNFT !== undefined && allNFT.nfts !== undefined) {
       const created = allNFT.nfts.filter((nft: any) => {
         if(nft !== undefined &&  nft.metadataObj !== undefined) {
-         return nft.metadataObj.creator == currentUserData.ethAddress
+         return nft.metadataObj.creator === address
         }
       })
+      console.log('created', created)
       setCreatedNFTs(created)
     }
 
   };
+
+
+  const fetchUserNfts = async (eth: string) => {
+
+    const options = {
+      chain: "mumbai",
+      address: eth,
+      token_address: "0x0b874cF7b842Ce12Cc8aF81a200dC0Db0d1b5f3F",
+    };
+
+    const polygonNFTs = await Web3Api.account.getNFTsForContract(options as any);
+    const tokenUri = polygonNFTs?.result?.map((data) => {
+      const {metadata, owner_of, token_id, token_address} = data;
+
+      if (metadata) {
+        const metadataObj = JSON.parse(metadata);
+        return {metadataObj, token_id, token_address, owner_of};
+      } else {
+        return undefined;
+      }
+      // eslint-disable-next-line no-unreachable
+    });
+
+    setUserNfts(tokenUri)
+    console.log('user tokens', tokenUri)
+
+  };
+
 
   return (
     <div className={`nc-AuthorPage  ${className}`} data-nc-id="AuthorPage">
@@ -131,14 +229,14 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
           <div className="relative bg-white dark:bg-neutral-900 dark:border dark:border-neutral-700 p-5 lg:p-8 rounded-3xl md:rounded-[40px] shadow-xl flex flex-col md:flex-row">
             <div className="w-32 lg:w-44 flex-shrink-0 mt-12 sm:mt-0">
               <NcImage
-                src={currentUserData.photoSrc || ProfileIcon}
+                src={userData.photoSrc}
                 containerClassName="aspect-w-1 aspect-h-1 rounded-3xl overflow-hidden"
               />
             </div>
             <div className="pt-5 md:pt-1 md:ml-6 xl:ml-14 flex-grow">
               <div className="max-w-screen-sm ">
                 <h2 className="inline-flex items-center text-2xl sm:text-3xl lg:text-4xl font-semibold">
-                  <span>{currentUserData.userName}</span>
+                  <span>{userData.userName}</span>
                   <VerifyIcon
                     className="ml-2"
                     iconClass="w-6 h-6 sm:w-7 sm:h-7 xl:w-8 xl:h-8"
@@ -148,31 +246,33 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
                   <span className="text-neutral-700 dark:text-neutral-300">
                     {shortEth}
                   </span>
-                  <svg width="20" height="21" viewBox="0 0 20 21" fill="none">
-                    <path
-                      d="M18.05 9.19992L17.2333 12.6833C16.5333 15.6916 15.15 16.9083 12.55 16.6583C12.1333 16.6249 11.6833 16.5499 11.2 16.4333L9.79999 16.0999C6.32499 15.2749 5.24999 13.5583 6.06665 10.0749L6.88332 6.58326C7.04999 5.87492 7.24999 5.25826 7.49999 4.74992C8.47499 2.73326 10.1333 2.19159 12.9167 2.84993L14.3083 3.17493C17.8 3.99159 18.8667 5.71659 18.05 9.19992Z"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M12.5498 16.6583C12.0331 17.0083 11.3831 17.3 10.5915 17.5583L9.2748 17.9917C5.96646 19.0583 4.2248 18.1667 3.1498 14.8583L2.08313 11.5667C1.01646 8.25833 1.8998 6.50833 5.20813 5.44167L6.5248 5.00833C6.86646 4.9 7.19146 4.80833 7.4998 4.75C7.2498 5.25833 7.0498 5.875 6.88313 6.58333L6.06646 10.075C5.2498 13.5583 6.3248 15.275 9.7998 16.1L11.1998 16.4333C11.6831 16.55 12.1331 16.625 12.5498 16.6583Z"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <div className={"active:opacity-[0.5]"} onClick={() => userData.ethAddress !== undefined ? navigator.clipboard.writeText(userData.ethAddress) : ''}>
+
+                    <svg width="20" height="21" viewBox="0 0 20 21" fill="none">
+                      <path
+                          d="M18.05 9.19992L17.2333 12.6833C16.5333 15.6916 15.15 16.9083 12.55 16.6583C12.1333 16.6249 11.6833 16.5499 11.2 16.4333L9.79999 16.0999C6.32499 15.2749 5.24999 13.5583 6.06665 10.0749L6.88332 6.58326C7.04999 5.87492 7.24999 5.25826 7.49999 4.74992C8.47499 2.73326 10.1333 2.19159 12.9167 2.84993L14.3083 3.17493C17.8 3.99159 18.8667 5.71659 18.05 9.19992Z"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                      />
+                      <path
+                          d="M12.5498 16.6583C12.0331 17.0083 11.3831 17.3 10.5915 17.5583L9.2748 17.9917C5.96646 19.0583 4.2248 18.1667 3.1498 14.8583L2.08313 11.5667C1.01646 8.25833 1.8998 6.50833 5.20813 5.44167L6.5248 5.00833C6.86646 4.9 7.19146 4.80833 7.4998 4.75C7.2498 5.25833 7.0498 5.875 6.88313 6.58333L6.06646 10.075C5.2498 13.5583 6.3248 15.275 9.7998 16.1L11.1998 16.4333C11.6831 16.55 12.1331 16.625 12.5498 16.6583Z"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
                 </div>
 
                 <span className="block mt-4 text-sm text-neutral-500 dark:text-neutral-400">
-                  Punk #4786 / An OG Cryptopunk Collector, hoarder of NFTs.
-                  Contributing to @ether_cards, an NFT Monetization Platform.
+                 {userData.aboutUser}
                 </span>
               </div>
               <div className="mt-4 ">
-                <SocialsList itemClass="block w-7 h-7" />
+                <SocialsList facebook={userData.facebook} twitter={userData.twitter} telegram={userData.telegram} itemClass="block w-7 h-7" />
               </div>
             </div>
             <div className="absolute md:static left-5 top-4 sm:left-auto sm:top-5 sm:right-5 flex flex-row-reverse justify-end">
@@ -286,8 +386,10 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
               <Tab.Panel className="">
                 {/* LOOP ITEMS */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 lg:mt-10">
-                  {currentUserData.nfts !== undefined && currentUserData.nfts.map((item, index) => {
-                    if(item !== undefined) {
+
+                  { userNfts !== undefined && userNfts?.length > 0 ? userNfts.map((item, index) => {
+
+                    if(item !== undefined && index < nftPage * 8) {
                       const nft = item.metadataObj
                       return nft !== undefined &&  <CardNFT
                           key={index}
@@ -304,21 +406,39 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
                       />
                     }
 
+                  }) : currentUserData.nfts !== undefined && currentUserData.nfts.map((item, index) => {
+
+                    if(item !== undefined && index < nftPage * 8) {
+                      const nft = item.metadataObj
+                      return nft !== undefined &&  <CardNFT
+                          key={index}
+                          isLiked
+                          uri={nft.image}
+                          inStock={nft.inStock}
+                          likesNumber={nft.likesNumber}
+                          name={nft.name}
+                          price={nft.price}
+                          externalUrl={nft.externalUrl}
+                          id={item.token_id}
+                          address={item.token_address}
+
+                      />
+                    }
                   })}
+
                 </div>
 
                 {/* PAGINATION */}
                 <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
                   <Pagination />
-                  <ButtonPrimary loading>Show me more</ButtonPrimary>
+                  <ButtonPrimary onClick={() => setNftPage(nftPage + 1)}>Show me more</ButtonPrimary>
                 </div>
               </Tab.Panel>
               <Tab.Panel className="">
                 {/* LOOP ITEMS */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 lg:mt-10">
                   { createdNFTs.map((item, index) => {
-                      if(item !== undefined && item.metadataObj) {
-
+                      if(item !== undefined && item.metadataObj && index <= nftPage * 8) {
                         const nft = item.metadataObj
                         return nft !== undefined &&  <CardNFT
                             key={index}
@@ -334,14 +454,13 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
 
                         />
                       }
-
                   })}
                 </div>
 
                 {/* PAGINATION */}
                 <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
                   <Pagination />
-                  <ButtonPrimary loading>Show me more</ButtonPrimary>
+                  <ButtonPrimary onClick={() => setNftPage(nftPage + 1)}>Show me more</ButtonPrimary>
                 </div>
               </Tab.Panel>
               <Tab.Panel className="">
@@ -349,13 +468,11 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 lg:mt-10">
                   {Array.from("11111111").map((_, index) => (
                     <CardNFT isLiked key={index}
-
                              uri={''}
                              inStock={''}
                              likesNumber={''}
                              name={''}
                              price={''}
-
                     />
                   ))}
                 </div>
@@ -363,7 +480,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
                 {/* PAGINATION */}
                 <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
                   <Pagination />
-                  <ButtonPrimary loading>Show me more</ButtonPrimary>
+                  <ButtonPrimary onClick={() => setNftPage(nftPage + 1)}>Show me more</ButtonPrimary>
                 </div>
               </Tab.Panel>
               <Tab.Panel className="">
@@ -377,7 +494,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
                 {/* PAGINATION */}
                 <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
                   <Pagination />
-                  <ButtonPrimary loading>Show me more</ButtonPrimary>
+                  <ButtonPrimary onClick={() => setNftPage(nftPage + 1)} >Show me more</ButtonPrimary>
                 </div>
               </Tab.Panel>
               <Tab.Panel className="">
@@ -391,7 +508,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" ,cardStyle = "style1",
                 {/* PAGINATION */}
                 <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
                   <Pagination />
-                  <ButtonPrimary loading>Show me more</ButtonPrimary>
+                  <ButtonPrimary onClick={() => setNftPage(nftPage + 1)}>Show me more</ButtonPrimary>
                 </div>
               </Tab.Panel>
             </Tab.Panels>

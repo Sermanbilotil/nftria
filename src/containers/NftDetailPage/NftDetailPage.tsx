@@ -1,5 +1,6 @@
 import React, {FC, useEffect, useState} from "react";
 import Avatar from "shared/Avatar/Avatar";
+import { Link } from "react-router-dom";
 import Badge from "shared/Badge/Badge";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import ButtonSecondary from "shared/Button/ButtonSecondary";
@@ -17,7 +18,7 @@ import LikeButton from "components/LikeButton";
 import AccordionInfo from "./AccordionInfo";
 import SectionBecomeAnAuthor from "components/SectionBecomeAnAuthor/SectionBecomeAnAuthor";
 import {useAppSelector} from "../../app/hooks";
-import {selectCurrentUserData} from "../../app/userData/getUserDataReducer";
+import {selectCurrentUserData, userDataFetched} from "../../app/userData/getUserDataReducer";
 import Moralis from "moralis";
 const axios = require('axios');
 
@@ -33,6 +34,7 @@ export interface NFTProps {
   instantSale: string;
   link: string;
   name: string;
+  category?: {name: string},
   onSale: string;
   price: string;
   propertie: string;
@@ -41,6 +43,22 @@ export interface NFTProps {
   unlock: string;
 }
 
+export interface  creatorState {
+  profilePhoto?: File | undefined,
+  photoSrc?: string,
+  userName?: string,
+  email?: string,
+  aboutUser?: string,
+  website?: string,
+  facebook?: string,
+  twitter?: string,
+  telegram?: string,
+  userNFT?: string,
+  ethAddress?: string,
+  login?: boolean,
+  error?: boolean,
+  // state?: "loading" | "playing" | "paused" | "ended" | null;
+}
 
 const NftDetailPage: FC<NftDetailPageProps> = (props,{
   className = "",
@@ -58,25 +76,30 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   const currentUserData = useAppSelector(selectCurrentUserData);
+
+  //Owner
+  const [owner, setOwner] = useState<creatorState>({})
   const [ownerName, setOwnerName] = useState('')
   const [ownerPhote, setOwnerPhoto] = useState('')
+  //Creator
+  const [creator, setCreator] = useState<creatorState>({})
   const [creatorName, setCreatorName] = useState('')
   const [creatorPhote, setCreatorPhoto] = useState('')
 
   const getOwner = () => {
     Moralis.Cloud.run('getUser', { ethAddress: currentUserData.ethAddress })
         .then(result =>   {
-          console.log('owner', result[0].attributes.userName)
+          console.log('owner', result[0].attributes)
           setOwnerName(result[0].attributes.userName)
           setOwnerPhoto(result[0].attributes.photoSrc)
+          setOwner(result[0].attributes)
         })
-
   }
 
-
   const fetchNFTContent = async () => {
+    //@ts-ignore
+    console.log('props.history',props.history)
     //@ts-ignore
     if(props.history  && props.history.location.state.externalUrl) {
 
@@ -96,8 +119,10 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
       if(res.data.creator) {
         Moralis.Cloud.run('getUser', { ethAddress:  res.data.creator })
             .then(result =>   {
+
               setCreatorName(result[0].attributes.userName)
               setCreatorPhoto(result[0].attributes.photoSrc)
+              setCreator(result[0].attributes)
             })
       }
 
@@ -114,12 +139,13 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
 
 
   const renderSection1 = () => {
+    // @ts-ignore
     return (
       <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
         {/* ---------- 1 ----------  */}
         <div className="pb-9 space-y-5">
           <div className="flex justify-between items-center">
-            <Badge name="Virtual Worlds" color="green" />
+            {nftData.category !== undefined && nftData.category  && <Badge name={   nftData.category.name } color="green" /> }
             <LikeSaveBtns />
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
@@ -127,7 +153,10 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
           </h2>
 
           {/* ---------- 4 ----------  */}
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-8 text-sm">
+          <div  className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-8 text-sm">
+            <Link  to={{pathname: `/page-author/${creator && creator.ethAddress}`, state: {
+               creator: creator
+              },}}>
             <div className="flex items-center ">
               <Avatar profilePhoto={creatorPhote || 'https://gxo6ck5wjopq.usemoralis.com:2053/server/files/h0KVrD5XXXT7pqwmZL7USCuNrdqiq2icJpwobjSq/92a00c935fcac3738f70504acab26d6e_photo.jpg'} sizeClass="h-9 w-9" radius="rounded-full" />
               <span className="ml-2.5 text-neutral-500 dark:text-neutral-400 flex flex-col">
@@ -139,10 +168,11 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
                 </span>
               </span>
             </div>
+            </Link>
             <div className="hidden sm:block h-6 border-l border-neutral-200 dark:border-neutral-700"></div>
             <div className="flex items-center">
               <Avatar
-                imgUrl={collectionPng.replace('./', '/') || 'https://gxo6ck5wjopq.usemoralis.com:2053/server/files/h0KVrD5XXXT7pqwmZL7USCuNrdqiq2icJpwobjSq/92a00c935fcac3738f70504acab26d6e_photo.jpg'}
+                imgUrl={collectionPng || 'https://gxo6ck5wjopq.usemoralis.com:2053/server/files/h0KVrD5XXXT7pqwmZL7USCuNrdqiq2icJpwobjSq/92a00c935fcac3738f70504acab26d6e_photo.jpg'}
                 sizeClass="h-9 w-9"
                 radius="rounded-full"
               />
@@ -259,7 +289,7 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
 
         {/* ---------- 9 ----------  */}
         <div className="pt-9">
-          <TabDetail ownerPhoto={ownerPhote} ownerName={ownerName} />
+          <TabDetail ownerPhoto={ownerPhote} ownerName={ownerName} owner={owner}  />
         </div>
       </div>
     );

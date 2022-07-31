@@ -13,7 +13,7 @@ export interface ButtonProps {
   disabled?: boolean;
   type?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
   // href?: keyof LocationStates | "#" | LinkProps["to"];
-  href?: keyof LocationStates;
+  href?: keyof LocationStates | string ;
   targetBlank?: boolean;
   onClick?: () => void;
 }
@@ -59,6 +59,18 @@ const Button: FC<ButtonProps> = ({
       </svg>
     );
   };
+  if(typeof href == "string" && href?.includes('https://')) {
+    return (
+        <a
+            href={href}
+            target={targetBlank ? "_blank" : undefined}
+            className={`${CLASSES} `}
+            rel="noopener noreferrer"
+        >
+          {children || `This is Link`}
+        </a>
+    );
+  }
 
   if (!!href) {
     return (

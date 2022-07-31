@@ -1,4 +1,4 @@
-import React, { FC, Fragment } from "react";
+import React, {FC, Fragment, useEffect, useState} from "react";
 import { Link } from "react-router-dom";
 import NextPrev from "shared/NextPrev/NextPrev";
 import { Transition } from "@headlessui/react";
@@ -12,6 +12,9 @@ import { nftsLargeImgs } from "contains/fakeData";
 import TimeCountDown from "./TimeCountDown";
 import collectionPng from "images/nfts/collection.png";
 import VerifyIcon from "components/VerifyIcon";
+import {creatorState} from "../../containers/NftDetailPage/NftDetailPage";
+import Moralis from "moralis";
+import twFocusClass from "../../utils/twFocusClass";
 
 export interface CardLarge1Props {
   className?: string;
@@ -19,6 +22,17 @@ export interface CardLarge1Props {
   onClickPrev?: () => void;
   isShowing?: boolean;
   featuredImgUrl?: string;
+  data: {
+    category: ""
+    collection: {image: string, name: string}
+    creator: string
+    externalUrl: string
+    image: string
+    inStock: string
+    likesNumber: string
+    name: string
+    price: string
+  },
 }
 
 const CardLarge1: FC<CardLarge1Props> = ({
@@ -27,7 +41,32 @@ const CardLarge1: FC<CardLarge1Props> = ({
   onClickNext = () => {},
   onClickPrev = () => {},
   featuredImgUrl = nftsLargeImgs[0],
+    data
 }) => {
+
+
+
+  //Creator
+  const [creator, setCreator] = useState<creatorState>({})
+  const [creatorName, setCreatorName] = useState('')
+  const [creatorPhote, setCreatorPhoto] = useState('')
+
+
+  useEffect(() => {
+    getCreator()
+  }, [])
+
+  const getCreator = () => {
+    Moralis.Cloud.run('getUser', { ethAddress:  data.creator })
+        .then(result =>   {
+
+          setCreatorName(result[0].attributes.userName)
+          setCreatorPhoto(result[0].attributes.photoSrc)
+          setCreator(result[0].attributes)
+        })
+  }
+
+
   return (
     <div>
       <Transition
@@ -46,7 +85,7 @@ const CardLarge1: FC<CardLarge1Props> = ({
               {/* TITLE */}
               <h2 className="text-2xl lg:text-3xl 2xl:text-5xl font-semibold ">
                 <Link to={"/nft-detailt"} title="Walking On Air">
-                  Walking On Air
+                  {data.name}
                 </Link>
               </h2>
 
@@ -54,25 +93,25 @@ const CardLarge1: FC<CardLarge1Props> = ({
               <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-12">
                 <div className="flex items-center">
                   <div className="flex-shrink-0 h-10 w-10">
-                    <Avatar sizeClass="w-10 h-10" />
+                    <Avatar sizeClass="w-10 h-10" imgUrl={creatorPhote} />
                   </div>
                   <div className="ml-3">
                     <div className="text-xs dark:text-neutral-400">Creator</div>
                     <div className="text-sm font-semibold flex items-center">
-                      <span>Jane Cooper</span>
+                      <span>{creatorName}</span>
                       <VerifyIcon />
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <div className="flex-shrink-0 h-10 w-10">
-                    <Avatar sizeClass="w-10 h-10" imgUrl={collectionPng} />
+                    <Avatar sizeClass="w-10 h-10"  imgUrl={data.collection.image}/>
                   </div>
                   <div className="ml-3">
                     <div className="text-xs dark:text-neutral-400">
-                      Collection
+                     Collection
                     </div>
-                    <div className="text-sm font-semibold ">Marscapes</div>
+                    <div className="text-sm font-semibold "> {data.collection !== undefined &&  data.collection.name}</div>
                   </div>
                 </div>
               </div>
@@ -84,7 +123,7 @@ const CardLarge1: FC<CardLarge1Props> = ({
                     Current Bid
                   </span>
                   <span className="text-3xl xl:text-4xl font-semibold text-green-500">
-                    1.000 ETH
+                    {data.price} ETH
                   </span>
                   <span className="text-lg text-neutral-400 sm:ml-3.5">
                     (≈ $3,221.22)
@@ -102,9 +141,14 @@ const CardLarge1: FC<CardLarge1Props> = ({
                 <ButtonPrimary href={"/nft-detailt"} className="flex-1">
                   Place a bid
                 </ButtonPrimary>
-                <ButtonSecondary href={"/nft-detailt"} className="flex-1">
+                <Link to={{pathname: `/nft-detailt/${data.externalUrl?.replace('https://ipfs.moralis.io:2053/ipfs/', '')}`, state: {
+                    externalUrl: data.externalUrl,
+                    uri: data.image,
+                    address: '',
+                    id: '',
+                  },}}  className="flex-1 nc-Button relative h-auto inline-flex items-center justify-center rounded-full transition-colors text-sm sm:text-base font-medium px-4 py-3 sm:px-6 text-neutral-700 dark:text-neutral-200">
                   View item
-                </ButtonSecondary>
+                </Link>
               </div>
             </div>
           </Transition.Child>
@@ -130,11 +174,16 @@ const CardLarge1: FC<CardLarge1Props> = ({
           enterTo="translate-y-0 scale-100 opacity-100"
         >
           <div>
-            <Link to={"/nft-detailt"}>
+            <Link to={{pathname: `/nft-detailt/${data.externalUrl?.replace('https://ipfs.moralis.io:2053/ipfs/', '')}`, state: {
+                externalUrl: data.externalUrl,
+                uri: data.image,
+                address: '',
+                id: '',
+              },}} className="flex-1">
               <NcImage
                 containerClassName="aspect-w-1 aspect-h-1 relative"
                 className="absolute inset-0 object-cover rounded-3xl sm:rounded-[40px] border-4 sm:border-[14px] border-white dark:border-neutral-800"
-                src={featuredImgUrl}
+                src={data.image}
                 alt={"title"}
               />
             </Link>

@@ -52,6 +52,15 @@ const PageCollection: FC<PageCollectionProps> = (props,{ className = "",  }) => 
 
         },[])
 
+  const getVolume = () => {
+
+    // @ts-ignore
+    const sum = NFTs.map(nft =>  isNaN(Number.parseInt(nft.price)) ? 0 : Number.parseInt(nft.price) )
+    const volume = sum.reduce((acc, num) => acc + num, 0);
+
+    return '$' + volume
+  }
+
   return (
     <div
       className={`nc-PageCollection  ${className}`}
@@ -147,7 +156,7 @@ const PageCollection: FC<PageCollectionProps> = (props,{ className = "",  }) => 
                     Volume
                   </span>
                   <span className="font-medium text-base mt-4 sm:text-xl sm:mt-6">
-                    $295,481.62
+                    {getVolume()}
                   </span>
                   <span className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
                     total
@@ -191,7 +200,7 @@ const PageCollection: FC<PageCollectionProps> = (props,{ className = "",  }) => 
           {/* LOOP ITEMS */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 lg:mt-10">
             { NFTs.map((item, index) => {
-              if(item !== undefined && index < nftPage * 12) {
+              if(item !== undefined && index < nftPage * 8) {
                 const nft = item
                 const token_address = currentUserData.nfts
 
@@ -204,9 +213,9 @@ const PageCollection: FC<PageCollectionProps> = (props,{ className = "",  }) => 
           </div>
 
           {/* PAGINATION */}
-          <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
-            <Pagination />
-            <ButtonPrimary loading>Show me more</ButtonPrimary>
+          <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-center sm:items-center">
+            {/*<Pagination />*/}
+            <ButtonPrimary onClick={() => setNftPage(nftPage + 1)} >Show me more</ButtonPrimary>
           </div>
         </main>
 
