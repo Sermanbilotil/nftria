@@ -90,7 +90,11 @@ const CardLarge1: FC<CardLarge1Props> = ({
               </h2>
 
               {/* AUTHOR AND COLLECTION */}
+
               <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-12">
+                <Link  to={{pathname: `/page-author/${creator && creator.ethAddress}`, state: {
+                    creator: creator
+                  },}}>
                 <div className="flex items-center">
                   <div className="flex-shrink-0 h-10 w-10">
                     <Avatar sizeClass="w-10 h-10" imgUrl={creatorPhote} />
@@ -103,6 +107,14 @@ const CardLarge1: FC<CardLarge1Props> = ({
                     </div>
                   </div>
                 </div>
+                </Link>
+
+
+                <Link to={{pathname: `/page-collection/${data.collection && data.collection.name}`, state: {
+                    name: data.collection && data.collection.name,
+                    items: [],
+                    imgs: data.collection && data.collection.image,
+                  },}}>
                 <div className="flex items-center">
                   <div className="flex-shrink-0 h-10 w-10">
                     <Avatar sizeClass="w-10 h-10"  imgUrl={data.collection.image}/>
@@ -114,7 +126,9 @@ const CardLarge1: FC<CardLarge1Props> = ({
                     <div className="text-sm font-semibold "> {data.collection !== undefined &&  data.collection.name}</div>
                   </div>
                 </div>
+                </Link>
               </div>
+
 
               {/* PRICE */}
               <div className="pt-6">

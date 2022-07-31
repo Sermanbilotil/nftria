@@ -127,6 +127,7 @@ const PageCollection: FC<PageCollectionProps> = (props,{ className = "",  }) => 
                 </div>
               </div>
             </div>
+
             <div className="mt-5 md:mt-0 md:ml-8 xl:ml-14 flex-grow">
               <div className="max-w-screen-sm ">
                 <h2 className="inline-block text-2xl sm:text-3xl lg:text-4xl font-semibold">

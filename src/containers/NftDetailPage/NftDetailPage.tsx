@@ -29,7 +29,7 @@ export interface NftDetailPageProps {
 
 }
 export interface NFTProps {
-  collection: {name: string};
+  collection?: {name: string, image: string};
   description: string;
   instantSale: string;
   link: string;
@@ -170,9 +170,14 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
             </div>
             </Link>
             <div className="hidden sm:block h-6 border-l border-neutral-200 dark:border-neutral-700"></div>
+            <Link to={{pathname: `/page-collection/${nftData.collection && nftData.collection.name}`, state: {
+                name: nftData.collection && nftData.collection.name,
+                items: [],
+                imgs: nftData.collection && nftData.collection.image,
+              },}}>
             <div className="flex items-center">
               <Avatar
-                imgUrl={collectionPng || 'https://gxo6ck5wjopq.usemoralis.com:2053/server/files/h0KVrD5XXXT7pqwmZL7USCuNrdqiq2icJpwobjSq/92a00c935fcac3738f70504acab26d6e_photo.jpg'}
+                imgUrl={nftData.collection && nftData.collection.image || collectionPng}
                 sizeClass="h-9 w-9"
                 radius="rounded-full"
               />
@@ -186,6 +191,7 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
                 </span>
               </span>
             </div>
+            </Link>
           </div>
         </div>
 
@@ -294,7 +300,7 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
       </div>
     );
   };
-
+    console.log('nftData.collection.name',nftData.collection && nftData.collection.name)
   return (
     <div
       className={`nc-NftDetailPage  ${className}`}
