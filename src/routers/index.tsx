@@ -17,12 +17,16 @@ import BlogSingle from "containers/BlogPage/BlogSingle";
 import SiteHeader from "containers/SiteHeader";
 import NftDetailPage from "containers/NftDetailPage/NftDetailPage";
 import PageCollection from "containers/PageCollection";
+import UnityApp from "containers/UnityApp";
 import PageSearch from "containers/PageSearch";
 import PageUploadItem from "containers/PageUploadItem";
 import PageConnectWallet from "containers/PageConnectWallet";
 import PageHome2 from "containers/PageHome/PageHome2";
 
 export const pages: Page[] = [
+  //Unity app
+  { path: "/app-page", component: UnityApp },
+  //
   { path: "/home2", exact: true, component: PageHome },
   { path: "/", exact: true, component: PageHome2 },
   { path: "/#", exact: true, component: PageHome2 },

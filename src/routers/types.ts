@@ -1,6 +1,9 @@
 import { ComponentType } from "react";
 
 export interface LocationStates {
+  //unity app
+  "/app-page"?: {};
+  //
   "/"?: {};
   "/#"?: {};
   "/home2"?: {};
@@ -8,11 +11,13 @@ export interface LocationStates {
   "/nft-detailt"?: {};
   "/page-collection"?: {};
   "/page-search"?: {};
+
   "/page-author"?: {};
   "/page-upload-item"?: {};
   "/home-header-2"?: {};
   "/connect-wallet"?: {};
   //
+
   "/account"?: {};
   //
   "/blog"?: {};

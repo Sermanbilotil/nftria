@@ -125,10 +125,7 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
               setCreator(result[0].attributes)
             })
       }
-
       console.log('res', res.data)
-
-
       setNftData(res.data)
     }
 
@@ -300,7 +297,7 @@ const NftDetailPage: FC<NftDetailPageProps> = (props,{
       </div>
     );
   };
-    console.log('nftData.collection.name',nftData.collection && nftData.collection.name)
+
   return (
     <div
       className={`nc-NftDetailPage  ${className}`}
