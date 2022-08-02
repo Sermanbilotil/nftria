@@ -2,6 +2,8 @@ import React, { FC, useState } from "react";
 import { Helmet } from "react-helmet";
 import {useAppSelector} from "../app/hooks";
 
+
+
 import { Unity, useUnityContext } from "react-unity-webgl";
 
 
@@ -12,10 +14,10 @@ export interface PageSearchProps {
 const UnityApp: FC<PageSearchProps> = ({ className = "" }) => {
 
     const { unityProvider } = useUnityContext({
-        loaderUrl: "../Unity/Build/myunityapp.loader.js",
-        dataUrl: "../Unity/Build/myunityapp.data",
-        frameworkUrl: "../Unity/Build/myunityapp.framework.js",
-        codeUrl: "../Unity/Build/myunityapp.wasm",
+        loaderUrl: "Unity/Build/TestWebGL.loader.js",
+        dataUrl: "Unity/Build/TestWebGL.loader.js",
+        frameworkUrl: "Unity/Build/TestWebGL.loader.js",
+        codeUrl: "Unity/Build/TestWebGL.loader.js",
     });
 
     return (
