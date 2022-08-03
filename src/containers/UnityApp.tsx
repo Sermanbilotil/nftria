@@ -17,9 +17,9 @@ const UnityApp: FC<PageSearchProps> = ({ className = "" }) => {
         productName: "React Unity",
         companyName: "NFTRIA",
         loaderUrl: "build/TestWebGL.loader.js",
-        dataUrl: "build/TestWebGL.loader.js",
-        frameworkUrl: "build/TestWebGL.loader.js",
-        codeUrl: "build/TestWebGL.loader.js",
+        dataUrl: "build/TestWebGL.data",
+        frameworkUrl: "build/TestWebGL.framework.js",
+        codeUrl: "build/TestWebGL.loader.wasm",
         webglContextAttributes: {
             preserveDrawingBuffer: true,
         },
