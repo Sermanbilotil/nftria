@@ -14,16 +14,21 @@ export interface PageSearchProps {
 const UnityApp: FC<PageSearchProps> = ({ className = "" }) => {
 
     const { unityProvider } = useUnityContext({
-        loaderUrl: "Unity/Build/TestWebGL.loader.js",
-        dataUrl: "Unity/Build/TestWebGL.loader.js",
-        frameworkUrl: "Unity/Build/TestWebGL.loader.js",
-        codeUrl: "Unity/Build/TestWebGL.loader.js",
+        productName: "React Unity",
+        companyName: "NFTRIA",
+        loaderUrl: "build/TestWebGL.loader.js",
+        dataUrl: "build/TestWebGL.loader.js",
+        frameworkUrl: "build/TestWebGL.loader.js",
+        codeUrl: "build/TestWebGL.loader.js",
+        webglContextAttributes: {
+            preserveDrawingBuffer: true,
+        },
     });
 
     return (
         <div className={`nc-PageSearch  ${className}`} data-nc-id="PageSearch">
             <Helmet>
-                <title>Search || Nftria</title>
+                <title>App || Nftria</title>
             </Helmet>
 
             <div
