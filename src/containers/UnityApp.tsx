@@ -2,12 +2,6 @@
 
 import React, {FC, useEffect, useState} from "react";
 import { Helmet } from "react-helmet";
-import {useAppSelector} from "../app/hooks";
-
-import UApp from "../../public/index"
-
-import  Unity, { UnityContext } from "react-unity-webgl";
-
 
 export interface PageSearchProps {
     className?: string;
@@ -15,8 +9,6 @@ export interface PageSearchProps {
 
 const UnityApp: FC<PageSearchProps> = ({ className = "" }) => {
 
-
-    //
     // const unityContext = new UnityContext({
     //     productName: "React Unity",
     //     companyName: "NFTRIA",
@@ -109,7 +101,7 @@ const UnityApp: FC<PageSearchProps> = ({ className = "" }) => {
       }
       loadingBar.style.display = "block";
 
-      var script = document.createElement("script");
+      let script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
           createUnityInstance(canvas, config, (progress) => {
