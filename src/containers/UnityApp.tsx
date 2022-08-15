@@ -46,12 +46,12 @@ const UnityApp: FC<PageSearchProps> = ({ className = "" }) => {
 
 
   useEffect(() => {
-      var container = document.querySelector("#unity-container");
-      var canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-      var warningBanner = document.querySelector("#unity-warning");
+      let container = document.querySelector("#unity-container");
+      let canvas = document.querySelector("#unity-canvas");
+      let loadingBar = document.querySelector("#unity-loading-bar");
+      let progressBarFull = document.querySelector("#unity-progress-bar-full");
+      let fullscreenButton = document.querySelector("#unity-fullscreen-button");
+      let warningBanner = document.querySelector("#unity-warning");
 
       // Shows a temporary message banner/ribbon for a few seconds, or
       // a permanent error message on top of the canvas if type=='error'.
@@ -77,9 +77,9 @@ const UnityApp: FC<PageSearchProps> = ({ className = "" }) => {
           updateBannerVisibility();
       }
 
-      var buildUrl = "build";
-      var loaderUrl = buildUrl + "/TestWebGL.loader.js";
-      var config = {
+      let buildUrl = "build";
+      let loaderUrl = buildUrl + "/TestWebGL.loader.js";
+      let config = {
           dataUrl: buildUrl + "/TestWebGL.data",
           frameworkUrl: buildUrl + "/TestWebGL.framework.js",
           codeUrl: buildUrl + "/TestWebGL.wasm",
@@ -140,10 +140,10 @@ const UnityApp: FC<PageSearchProps> = ({ className = "" }) => {
                 data-nc-id="HeadBackgroundCommon"
             />
 
-            <div className="container py-16 lg:pb-28 lg:pt-20 space-y-16 lg:space-y-28">
+            <div className="container py-16 lg:pb-28 pr-0 pl-0 lg:pt-0 space-y-16 lg:space-y-28">
                 <main>
                     <div id="unity-container" className="unity-desktop">
-                        <canvas id="unity-canvas" width={960} height={600}></canvas>
+                        <canvas id="unity-canvas" width={"100%"} height={600}></canvas>
                     <div id="unity-loading-bar">
                         <div id="unity-logo"></div>
                         <div id="unity-progress-bar-empty">
