@@ -8,7 +8,7 @@ export interface PageSearchProps {
 }
 
 const UnityApp: FC<PageSearchProps> = ({ className = "" }) => {
-
+        const height = window.innerHeight
     // const unityContext = new UnityContext({
     //     productName: "React Unity",
     //     companyName: "NFTRIA",
@@ -127,15 +127,10 @@ const UnityApp: FC<PageSearchProps> = ({ className = "" }) => {
             </Helmet>
 
 
-            <div
-                className={`nc-HeadBackgroundCommon h-24 2xl:h-28 top-0 left-0 right-0 w-full bg-primary-50 dark:bg-neutral-800/20 `}
-                data-nc-id="HeadBackgroundCommon"
-            />
-
-            <div className="container py-16 lg:pb-28 pr-0 pl-0 lg:pt-0 space-y-16 lg:space-y-28">
+            <div className="container  py-16 lg:pb-28  pr-0 pl-0 lg:pt-10 space-y-16 lg:space-y-28">
                 <main>
                     <div id="unity-container" className="unity-desktop">
-                        <canvas id="unity-canvas" width={"100%"} height={600}></canvas>
+                        <canvas id="unity-canvas" width={"100%"} height={height}></canvas>
                     <div id="unity-loading-bar">
                         <div id="unity-logo"></div>
                         <div id="unity-progress-bar-empty">
